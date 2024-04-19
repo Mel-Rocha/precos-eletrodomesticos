@@ -8,7 +8,7 @@ from apps.docs import routes as docs_router
 from apps.auth.middlewares import AuthMiddleware
 from apps.docs.custom_openai import custom_openapi
 from apps.shopping_cart import routes as shopping_cart_router
-from apps.ikesaki import routes as ikesaki_router
+from apps.product import routes as product_router
 
 load_dotenv()
 
@@ -44,7 +44,7 @@ def create_application() -> FastAPI:
 
     application.include_router(docs_router.router, tags=['shopping_cart'])
     application.include_router(shopping_cart_router.router, prefix="/shopping_cart", tags=['shopping_cart'])
-    application.include_router(ikesaki_router.router, prefix="/ikesaki", tags=['ikesaki'])
+    application.include_router(product_router.router, prefix="/product", tags=['product'])
 
 
     return application

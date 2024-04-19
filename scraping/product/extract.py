@@ -1,10 +1,11 @@
 import re
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
 
 
-class ExtractProductPrice:
+class ExtractProductPriceStore:
     def __init__(self, url):
         self.url = url
         self.response = self._get_response()
@@ -36,12 +37,18 @@ class ExtractProductPrice:
 
         return price_from_regex
 
+    def extract_store(self):
+        parsed_url = urlparse(self.url)
+        domain = parsed_url.netloc
+        store = domain.split(".")[1]
+        return store
+
 # Teste da classe
-url = 'https://www.ikesaki.com.br/coloracao-igora-royal-8-77-louro-claro-cobre-extra-60g-76-37/p'
-extractor = ExtractProductPrice(url)
+url = 'https://www.mundodocabeleireiro.com.br/coloracao-igora-royal-8-1-louro-claro-cinza-60g/p'
+extractor = ExtractProductPriceStore(url)
 product = extractor.extract_product()
 price = extractor.extract_price()
+store = extractor.extract_store()
 
-result = {"product": product, "price": price}
+result = {"store": store, "product": product, "price": price}
 print(result)
-
