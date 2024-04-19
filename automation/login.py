@@ -13,7 +13,7 @@ driver = webdriver.Chrome(service=service)
 product = "Coloração Igora Royal 8.77 Louro Claro Cobre Extra 60g"
 
 sites = [
-    {"url": "https://www.ikesaki.com.br/"}
+    {"url": "https://www.mundodocabeleireiro.com.br/"}
     # Adicione outros sites conforme necessário
 ]
 
