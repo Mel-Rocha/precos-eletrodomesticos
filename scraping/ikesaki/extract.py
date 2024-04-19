@@ -1,7 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 
-def scrape_whole_page(url):
+def scrape_product_info(url):
     # Realiza o request para a URL
     response = requests.get(url)
     # Verifica se a requisição foi bem-sucedida
@@ -11,14 +14,14 @@ def scrape_whole_page(url):
     # Parseia o conteúdo HTML
     soup = BeautifulSoup(response.content, 'html.parser')
 
-    # Formata o HTML usando o método prettify()
-    html_prettified = soup.prettify()
+    # Encontra o título do produto
+    product_element = soup.find('h1')
+    product = product_element.text.strip() if product_element else None
 
-    return html_prettified
+    return product
 
-url = 'https://www.ikesaki.com.br/coloracao-igora-royal-8-77-louro-claro-cobre-extra-60g-76-37/p'
+url = 'https://www.ikesaki.com.br/coloracao-igora-royal-7-00-louro-medio-natural-extra-60g/p'
 
-html_content = scrape_whole_page(url)
-print(html_content)
-
+product_info_soup = scrape_product_info(url)
+print("Produto (BeautifulSoup):", product_info_soup)
 
