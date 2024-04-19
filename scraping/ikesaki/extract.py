@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-
 def scrape_product_price(url):
     # Realiza o request para a URL
     response = requests.get(url)
@@ -14,26 +13,45 @@ def scrape_product_price(url):
     # Parseia o conteúdo HTML
     soup = BeautifulSoup(response.content, 'html.parser')
 
-    # Encontra todos os elementos que contêm "$"
-    elementos_com_dollar = soup.find_all(text=lambda text: text and '$' in text)
+    # Inicializa uma variável para armazenar o preço extraído usando a expressão regular
+    price_from_regex = None
 
-    # Para cada elemento encontrado, extrai o valor
-    for elemento in elementos_com_dollar:
-        valor = elemento.split('$')[-1].strip()
-        print("Valor encontrado (do BeautifulSoup):", valor)
-
-    # Encontra todos os elementos que contêm a chave "Value"
+    # Encontra todos os elementos que contêm a chave "Value" usando expressão regular
     pattern = r'"Value"\s*:\s*([\d.]+)'
     matches = re.findall(pattern, response.text)
 
     # Se houver correspondências, extrai o valor encontrado
     if matches:
-        valor_encontrado = matches[0]
-        print("Valor encontrado (da expressão regular):", valor_encontrado)
+        price_from_regex = matches[0]
     else:
-        print("Nenhum valor correspondente encontrado.")
+        price_from_regex = "Nenhum valor correspondente encontrado."
 
+    # Retorna apenas o preço extraído usando a expressão regular
+    return price_from_regex
 
 # Teste da função
-url = "https://www.ikesaki.com.br/coloracao-igora-royal-7-00-louro-medio-natural-extra-60g/p"
-scrape_product_price(url)
+url = "https://www.ikesaki.com.br/coloracao-igora-royal-8-77-louro-claro-cobre-extra-60g-76-37/p"
+price_from_regex = scrape_product_price(url)
+print("Preço extraído usando regex:", price_from_regex)
+
+def scrape_product_info(url):
+    # Realiza o request para a URL
+    response = requests.get(url)
+    # Verifica se a requisição foi bem-sucedida
+    if response.status_code != 200:
+        raise Exception("URL inválida ou não encontrada")
+
+    # Parseia o conteúdo HTML
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    # Encontra o título do produto
+    product_element = soup.find('h1')
+    product = product_element.text.strip() if product_element else None
+
+
+    # Retorna um dicionário com as chaves "product" e "price"
+    return {"product": product}
+
+url = 'https://www.ikesaki.com.br/coloracao-igora-royal-8-77-louro-claro-cobre-extra-60g-76-37/p'
+product_info = scrape_product_info(url)
+print(product_info)
