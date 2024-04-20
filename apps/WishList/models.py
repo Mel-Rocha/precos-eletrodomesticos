@@ -3,11 +3,11 @@ import uuid
 from tortoise import fields, Model
 
 CHOICES = [
-    ('very_low', 'Very Low'),
-    ('low', 'Low'),
-    ('average', 'Average'),
-    ('high', 'High'),
-    ('very_high', 'Very High'),
+    (u'1', 'very_low'),
+    (u'2', 'low'),
+    (u'3', 'average'),
+    (u'4', 'high'),
+    (u'5', 'very_high')
 ]
 
 
@@ -18,5 +18,5 @@ class WishList(Model):
     product_name = fields.CharField(max_length=255)
     site_domain = fields.CharField(max_length=255)
     expected_purchase_date = fields.DateField()
-    desire_to_acquire = fields.CharField(max_length=10, choices=CHOICES, default='average')
-    need_to_acquire = fields.CharField(max_length=10, choices=CHOICES, default='average')
+    desire_to_acquire = fields.CharField(max_length=10, choices=CHOICES, default='3')
+    need_to_acquire = fields.CharField(max_length=10, choices=CHOICES, default='3')
