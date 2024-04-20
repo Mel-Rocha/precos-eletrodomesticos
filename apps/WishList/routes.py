@@ -46,24 +46,13 @@ async def upload_wish_list(file: UploadFile = File(...)):
         df['need_to_acquire'] = df['NEED_TO_ACQUIRE'].astype(str).str.strip()
         df = df.drop('NEED_TO_ACQUIRE', axis=1)
 
-        df = df.fillna('')
+        data_to_insert = df.to_dict(orient='records')
 
-        for index, row in df.iterrows():
-            wishlist = {
-                "product_name": row['product_name'],
-                "site_domain": row['site_domain'],
-                "expected_purchase_date": row['expected_purchase_date'],
-                "desire_to_acquire": row['desire_to_acquire'],
-                "need_to_acquire": row['need_to_acquire']
-            }
-            try:
-                await WishList.create(**wishlist)
-            except IntegrityError:
-                print(f"Duplicate key on row {index} for {wishlist}")
+        await WishList.bulk_create([WishList(**row) for row in data_to_insert])
 
         return JSONResponse(content={"message": "Wish list uploaded successfully"},
                             status_code=201)
 
     except Exception as e:
         return JSONResponse(content={"message": str(e)},
-                            status_code=400)
+                            status_code=500)
