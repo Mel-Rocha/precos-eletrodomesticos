@@ -13,7 +13,7 @@ TORTOISE_ORM = {
     },
     "apps": {
         "models": {
-            "models": ["apps.WishList.models", "aerich.models"],
+            "models": ["apps.wish_list.models", "aerich.models"],
             "default_connection": "default",
         }
     },

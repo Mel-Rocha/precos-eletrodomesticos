@@ -1,6 +1,6 @@
 from tortoise.contrib.pydantic import pydantic_model_creator
 
-from apps.WishList.models import WishList
+from apps.wish_list.models import WishList
 
 WishListSchema = None
 

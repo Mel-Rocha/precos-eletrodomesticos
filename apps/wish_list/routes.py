@@ -1,24 +1,20 @@
 from io import BytesIO
 
 import pandas as pd
-from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from fastapi_pagination import Page, add_pagination, paginate
 from fastapi import APIRouter, UploadFile, File
-from tortoise.exceptions import IntegrityError
 
-from apps.WishList.models import WishList
-from apps.WishList.schema import WishListSchema
+from apps.wish_list.models import WishList
+from apps.wish_list.schema import WishListSchema
 
 router = APIRouter()
 
 
 @router.get("/")
 async def get_wish_list_all() -> Page[WishListSchema]:
-    wish_list_all = await WishList.all()
-
+    wish_list_all = await WishList.all().values()
     return paginate(wish_list_all)
-
 
 add_pagination(router)
 
