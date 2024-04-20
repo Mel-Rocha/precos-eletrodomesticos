@@ -49,9 +49,13 @@ class AutomationSearchProduct:
                     print("Não houve redirecionamento após clicar na imagem.")
 
         time.sleep(5)
+        current_url = self.driver.current_url
+
         self.stop_driver()
 
-        # return self.driver.current_url
+        return current_url
+
+
 
 
 # sites = [
