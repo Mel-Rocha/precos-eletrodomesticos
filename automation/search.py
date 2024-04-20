@@ -19,10 +19,19 @@ class AutomationSearchProduct:
         if self.driver:
             self.driver.quit()
 
-    def search_product_on_site(self, site_url, product):
+    def search_product_on_site(self, site_domain, product):
+        """
+        Objective:
+        Search the domain website for the specific product
+        through automation, and click on the first corresponding product.
+
+        Parameters:
+        site_domain = "https://www.ikesaki.com.br/"
+        product = "Esmalte Vermelho"
+        """
         self.start_driver()
 
-        self.driver.get(site_url)
+        self.driver.get(site_domain)
         time.sleep(2)
         search_box = self.driver.find_element('xpath', '//*[@id="downshift-0-input"]')
         search_box.send_keys(product, Keys.ENTER)
@@ -43,7 +52,7 @@ class AutomationSearchProduct:
 
                 time.sleep(3)
 
-                if self.driver.current_url != site_url:
+                if self.driver.current_url != site_domain:
                     print("Redirecionado para:", self.driver.current_url)
                 else:
                     print("Não houve redirecionamento após clicar na imagem.")
@@ -55,14 +64,3 @@ class AutomationSearchProduct:
 
         return current_url
 
-
-
-
-# sites = [
-#     {"url": "https://www.ikesaki.com.br/"},
-# ]
-
-# product = "Coloração Igora Royal 8.77 Louro Claro Cobre Extra 60g"
-# automation = AutomationSearchProduct()
-# for site in sites:
-#     automation.search_product_on_site(site["url"], product)

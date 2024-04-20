@@ -6,9 +6,9 @@ def custom_openapi(app):
         return app.openapi_schema
 
     openapi_schema = get_openapi(
-        title="Prices",
+        title="Prices Ikesaki",
         version="1.0.0",
-        description="This is the documentation for the Magazine Luiza and Casas Bahia pricing API",
+        description="This is the price monitoring documentation for Ikesaki perfumery",
         routes=app.routes,
     )
 

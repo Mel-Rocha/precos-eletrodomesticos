@@ -6,6 +6,14 @@ from bs4 import BeautifulSoup
 
 
 class ExtractProductPriceStore:
+    """
+    Objective:
+    extract relevant product information (such as name, price and store name)
+    through web scraping based on its URL
+
+    Parameters:
+    url = "https://www.ikesaki.com.br/progressiva-borabella-nao-chore-mais-1000g/p"
+    """
     def __init__(self, url):
         self.url = url
         self.response = self._get_response()
