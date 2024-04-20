@@ -43,12 +43,4 @@ class ExtractProductPriceStore:
         store = domain.split(".")[1]
         return store
 
-# Teste da classe
-url = 'https://www.mundodocabeleireiro.com.br/coloracao-igora-royal-8-1-louro-claro-cinza-60g/p'
-extractor = ExtractProductPriceStore(url)
-product = extractor.extract_product()
-price = extractor.extract_price()
-store = extractor.extract_store()
 
-result = {"store": store, "product": product, "price": price}
-print(result)
