@@ -8,10 +8,10 @@ router = APIRouter()
 
 
 @router.get("/")
-async def get_shopping_cart_all() -> Page[WishListSchema]:
-    shopping_cart_all = await WishList.all()
+async def get_wish_list_all() -> Page[WishListSchema]:
+    wish_list_all = await WishList.all()
 
-    return paginate(shopping_cart_all)
+    return paginate(wish_list_all)
 
 
 add_pagination(router)
