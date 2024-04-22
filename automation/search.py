@@ -19,7 +19,7 @@ class AutomationSearchProduct:
         if self.driver:
             self.driver.quit()
 
-    def search_product_on_site(self, site_domain, product):
+    def search_product_on_site(self, product, site_domain="https://www.ikesaki.com.br/"):
         """
         Objective:
         Search the domain website for the specific product
@@ -45,8 +45,9 @@ class AutomationSearchProduct:
         if gallery_div:
             first_img = gallery_div.find('img')
             if first_img:
-                img_element = self.driver.find_element('xpath', '//*[@id="gallery-layout-container"]/div/section/a/article'
-                                                           '/div[1]/div[1]/div/div/img')
+                img_element = self.driver.find_element('xpath',
+                                                       '//*[@id="gallery-layout-container"]/div/section/a/article'
+                                                       '/div[1]/div[1]/div/div/img')
 
                 img_element.click()
 
@@ -63,4 +64,3 @@ class AutomationSearchProduct:
         self.stop_driver()
 
         return current_url
-
