@@ -17,7 +17,7 @@ def init_db(instance: FastAPI) -> None:
     register_tortoise(
         instance,
         db_url=os.getenv("DATABASE_URL"),
-        modules={"models": ["apps.wish_list.models"]},
+        modules={"models": ["apps.wish_list.models", "apps.product.models"]},
         generate_schemas=True,
         add_exception_handlers=True,
     )
