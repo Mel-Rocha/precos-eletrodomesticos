@@ -60,8 +60,8 @@ async def upload_wish_list(file: UploadFile = File(...)):
                             status_code=201)
 
     except InvalidColumnsException as e:
-        return JSONResponse(content={"message": f'{str(e)}, The spreadsheet must contain these columns PRODUCT_NAME, '
-                                                f'SITE_DOMAIN, EXPECTED_PURCHASE_DATE, DESIRE_TO_ACQUIRE, '
+        return JSONResponse(content={"message": f'{str(e)}, The spreadsheet must contain these columns WISH_TITLE, '
+                                                f'EXPECTED_PURCHASE_DATE, DESIRE_TO_ACQUIRE, '
                                                 f'NEED_TO_ACQUIRE'},
                             status_code=400)
     except IntegrityError as e:
