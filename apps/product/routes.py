@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 
 from scraping.product.extract import ExtractProductPriceStore
@@ -44,6 +45,8 @@ async def automation_product(product: str, site_domain: str):
 @router.get("/create_or_update/")
 async def create_or_update():
     wish_lists = await WishList.all().values()
+    messages = {}
+    status_code = None
     for wish_list in wish_lists:
         try:
 
@@ -63,6 +66,8 @@ async def create_or_update():
                     url=redirected_url,
                     price={current_date: price},
                 )
+                messages[str(product.name)] = "Product created"
+                status_code = 201
             else:
                 # Try to get or create a Product with the specified id
                 product, created = await Product.get_or_create(
@@ -79,13 +84,23 @@ async def create_or_update():
                     product.name = product_name
                     product.store = store
                     product.url = redirected_url
-                    if not isinstance(product.price, dict):
-                        product.price = {}
-                    product.price[current_date] = price
-                    await product.save()
+                    if not created:
+                        product.name = product_name
+                        product.store = store
+                        product.url = redirected_url
+                        if not isinstance(product.price, dict):
+                            product.price = {}
+                        product.price[current_date] = price
+                        await product.save()
+                        messages[str(product.name)] = "Product updated"
+                        status_code = 200
 
-            wish_list['product_id'] = product.id
-            await WishList.filter(id=wish_list['id']).update(product_id=product.id)
+                    # return JSONResponse(content={"message": "Product updated"}, status_code=200)
+
+                wish_list['product_id'] = product.id
+                await WishList.filter(id=wish_list['id']).update(product_id=product.id)
 
         except Exception as e:
-            raise HTTPException(status_code=400, detail=str(e))
+            return JSONResponse(content={"message": str(e)}, status_code=500)
+
+    return JSONResponse(content=messages, status_code=status_code)
