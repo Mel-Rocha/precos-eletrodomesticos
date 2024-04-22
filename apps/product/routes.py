@@ -66,6 +66,10 @@ async def create_or_update():
                     url=redirected_url,
                     price={current_date: price},
                 )
+
+                wish_list['product_id'] = product.id
+                await WishList.filter(id=wish_list['id']).update(product_id=product.id)
+
                 messages[str(product.name)] = "Product created"
                 status_code = 201
             else:
@@ -84,21 +88,12 @@ async def create_or_update():
                     product.name = product_name
                     product.store = store
                     product.url = redirected_url
-                    if not created:
-                        product.name = product_name
-                        product.store = store
-                        product.url = redirected_url
-                        if not isinstance(product.price, dict):
-                            product.price = {}
-                        product.price[current_date] = price
-                        await product.save()
-                        messages[str(product.name)] = "Product updated"
-                        status_code = 200
-
-                    # return JSONResponse(content={"message": "Product updated"}, status_code=200)
-
-                wish_list['product_id'] = product.id
-                await WishList.filter(id=wish_list['id']).update(product_id=product.id)
+                    if not isinstance(product.price, dict):
+                        product.price = {}
+                    product.price[current_date] = price
+                    await product.save()
+                    messages[str(product.name)] = "Product updated"
+                    status_code = 200
 
         except Exception as e:
             return JSONResponse(content={"message": str(e)}, status_code=500)
