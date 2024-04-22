@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException
 from dotenv import load_dotenv
 
 from scraping.product.extract import ExtractProductPriceStore
+from apps.wish_list.models import WishList
+from apps.product.models import Product
 from automation.search import AutomationSearchProduct
 
 load_dotenv()
@@ -22,7 +24,7 @@ async def extract_product_price_store(url: str):
 
 
 @router.get("/automation/")
-async def automation_product(site_domain: str, product: str):
+async def automation_product(product: str, site_domain: str):
     try:
         automation = AutomationSearchProduct()
         redirected_url = automation.search_product_on_site(site_domain, product)
@@ -35,3 +37,50 @@ async def automation_product(site_domain: str, product: str):
         return {"product": product, "price": price, "store": store}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/create_or_update/")
+async def create_or_update():
+    wish_lists = await WishList.all().values()
+    for wish_list in wish_lists:
+        try:
+
+            automation = AutomationSearchProduct()
+            redirected_url = automation.search_product_on_site(wish_list['wish_title'])
+            extractor = ExtractProductPriceStore(redirected_url)
+            product_name = extractor.extract_product()
+            price = extractor.extract_price()
+            store = extractor.extract_store()
+
+            if wish_list['product_id'] is None:
+                # Create a new Product without specifying an id
+                product = await Product.create(
+                    name=product_name,
+                    store=store,
+                    url=redirected_url,
+                    price=price,
+                )
+            else:
+                # Try to get or create a Product with the specified id
+                product, created = await Product.get_or_create(
+                    id=wish_list['product_id'],
+                    defaults={
+                        "name": product_name,
+                        "store": store,
+                        "url": redirected_url,
+                        "price": price,
+                    }
+                )
+
+                if not created:
+                    product.name = product_name
+                    product.store = store
+                    product.url = redirected_url
+                    product.price = price
+                    await product.save()
+
+            wish_list['product_id'] = product.id
+            await WishList.filter(id=wish_list['id']).update(product_id=product.id)
+
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))

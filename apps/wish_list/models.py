@@ -19,3 +19,4 @@ class WishList(Model):
     expected_purchase_date = fields.DateField()
     desire_to_acquire = fields.CharField(max_length=10, choices=CHOICES, default='3')
     need_to_acquire = fields.CharField(max_length=10, choices=CHOICES, default='3')
+    product_id = fields.UUIDField(null=True)
