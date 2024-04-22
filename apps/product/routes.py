@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, HTTPException
 from dotenv import load_dotenv
 
@@ -52,13 +54,14 @@ async def create_or_update():
             price = extractor.extract_price()
             store = extractor.extract_store()
 
+            current_date = datetime.now().strftime('%Y-%m-%d')
             if wish_list['product_id'] is None:
                 # Create a new Product without specifying an id
                 product = await Product.create(
                     name=product_name,
                     store=store,
                     url=redirected_url,
-                    price=price,
+                    price={current_date: price},
                 )
             else:
                 # Try to get or create a Product with the specified id
@@ -68,7 +71,7 @@ async def create_or_update():
                         "name": product_name,
                         "store": store,
                         "url": redirected_url,
-                        "price": price,
+                        "price": {current_date: price},
                     }
                 )
 
@@ -76,7 +79,9 @@ async def create_or_update():
                     product.name = product_name
                     product.store = store
                     product.url = redirected_url
-                    product.price = price
+                    if not isinstance(product.price, dict):
+                        product.price = {}
+                    product.price[current_date] = price
                     await product.save()
 
             wish_list['product_id'] = product.id
