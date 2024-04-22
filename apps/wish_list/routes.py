@@ -4,6 +4,7 @@ import pandas as pd
 from fastapi.responses import JSONResponse
 from fastapi_pagination import Page, add_pagination, paginate
 from fastapi import APIRouter, UploadFile, File
+from tortoise.exceptions import IntegrityError
 
 from apps.wish_list.exceptions import InvalidColumnsException
 from apps.wish_list.models import WishList
@@ -62,6 +63,9 @@ async def upload_wish_list(file: UploadFile = File(...)):
         return JSONResponse(content={"message": f'{str(e)}, The spreadsheet must contain these columns PRODUCT_NAME, '
                                                 f'SITE_DOMAIN, EXPECTED_PURCHASE_DATE, DESIRE_TO_ACQUIRE, '
                                                 f'NEED_TO_ACQUIRE'},
+                            status_code=400)
+    except IntegrityError as e:
+        return JSONResponse(content={"message": f'{str(e)}, the wish_title field cannot have duplicate values'},
                             status_code=400)
 
     except Exception as e:

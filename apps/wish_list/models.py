@@ -15,7 +15,7 @@ class WishList(Model):
     id = fields.UUIDField(pk=True, default=uuid.uuid4)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
-    wish_title = fields.CharField(max_length=255)
+    wish_title = fields.CharField(max_length=255, unique=True)
     expected_purchase_date = fields.DateField()
     desire_to_acquire = fields.CharField(max_length=10, choices=CHOICES, default='3')
     need_to_acquire = fields.CharField(max_length=10, choices=CHOICES, default='3')
