@@ -31,17 +31,14 @@ async def upload_wish_list(file: UploadFile = File(...)):
         df = pd.read_excel(file_data)
 
         # Validation columns
-        expected_columns = {'PRODUCT_NAME', 'SITE_DOMAIN', 'EXPECTED_PURCHASE_DATE', 'DESIRE_TO_ACQUIRE',
+        expected_columns = {'WISH_TITLE', 'EXPECTED_PURCHASE_DATE', 'DESIRE_TO_ACQUIRE',
                             'NEED_TO_ACQUIRE'}
         if set(df.columns) != expected_columns:
             raise InvalidColumnsException(status_code=400, detail="Upload Failed")
 
         # Column treatment
-        df['product_name'] = df['PRODUCT_NAME'].astype(str).str.strip()
-        df = df.drop('PRODUCT_NAME', axis=1)
-
-        df['site_domain'] = df['SITE_DOMAIN'].astype(str).str.strip()
-        df = df.drop('SITE_DOMAIN', axis=1)
+        df['wish_title'] = df['WISH_TITLE'].astype(str).str.strip()
+        df = df.drop('WISH_TITLE', axis=1)
 
         df['expected_purchase_date'] = df['EXPECTED_PURCHASE_DATE'].astype(str).str.strip()
         df = df.drop('EXPECTED_PURCHASE_DATE', axis=1)
