@@ -8,6 +8,7 @@ from scraping.product.extract import ExtractProductPriceStore
 from apps.wish_list.models import WishList
 from apps.product.models import Product
 from automation.search import AutomationSearchProduct
+from apps.product.utils import extract_info_from_url
 
 load_dotenv()
 
@@ -16,30 +17,17 @@ router = APIRouter()
 
 @router.get("/extract/")
 async def extract_product_price_store(url: str):
+    return await extract_info_from_url(url)
+
+
+@router.get("/automation/")
+async def automation_product(product: str, site_domain: str = 'https://www.ikesaki.com.br'):
     try:
-        extractor = ExtractProductPriceStore(url)
-        product = extractor.extract_product()
-        price = extractor.extract_price()
-        store = extractor.extract_store()
-        return {"product": product, "price": price, "store": store}
+        automation = AutomationSearchProduct()
+        redirected_url = automation.search_product_on_site(product, site_domain)
+        return await extract_info_from_url(redirected_url)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
-# @router.get("/automation/")
-# async def automation_product(product: str, site_domain: str):
-#     try:
-#         automation = AutomationSearchProduct()
-#         redirected_url = automation.search_product_on_site(site_domain, product)
-#
-#         extractor = ExtractProductPriceStore(redirected_url)
-#         product = extractor.extract_product()
-#         price = extractor.extract_price()
-#         store = extractor.extract_store()
-#
-#         return {"product": product, "price": price, "store": store}
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.get("/create_or_update/")
