@@ -1,3 +1,10 @@
+## Funcionalidade v.2.0.0
+- Fazer upload da planilha de lista de desejos (WishList);
+- Visualização páginada da lista de desejos;
+- Extração de informações relevantes (preço) de determinado produto com base em sua url;
+- Criar novos produtos com base na lista de desejos;
+- Informar um produto e um site opcional e extrair suas informações relevantes.
+
 ## Rodando o projeto
 ## Dependências do projeto
 
