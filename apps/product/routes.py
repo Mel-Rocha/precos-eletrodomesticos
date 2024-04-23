@@ -4,7 +4,6 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 
-from scraping.product.extract import ExtractProductPriceStore
 from apps.wish_list.models import WishList
 from apps.product.models import Product
 from automation.search import AutomationSearchProduct
