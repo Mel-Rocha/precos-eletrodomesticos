@@ -26,20 +26,20 @@ async def extract_product_price_store(url: str):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/automation/")
-async def automation_product(product: str, site_domain: str):
-    try:
-        automation = AutomationSearchProduct()
-        redirected_url = automation.search_product_on_site(site_domain, product)
-
-        extractor = ExtractProductPriceStore(redirected_url)
-        product = extractor.extract_product()
-        price = extractor.extract_price()
-        store = extractor.extract_store()
-
-        return {"product": product, "price": price, "store": store}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+# @router.get("/automation/")
+# async def automation_product(product: str, site_domain: str):
+#     try:
+#         automation = AutomationSearchProduct()
+#         redirected_url = automation.search_product_on_site(site_domain, product)
+#
+#         extractor = ExtractProductPriceStore(redirected_url)
+#         product = extractor.extract_product()
+#         price = extractor.extract_price()
+#         store = extractor.extract_store()
+#
+#         return {"product": product, "price": price, "store": store}
+#     except Exception as e:
+#         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.get("/create_or_update/")
