@@ -40,10 +40,10 @@ async def create_or_update():
 
             automation = AutomationSearchProduct()
             redirected_url = automation.search_product_on_site(wish_list['wish_title'])
-            extractor = ExtractProductPriceStore(redirected_url)
-            product_name = extractor.extract_product()
-            price = extractor.extract_price()
-            store = extractor.extract_store()
+            product_info = await extract_info_from_url(redirected_url)
+            product_name = product_info['product']
+            price = product_info['price']
+            store = product_info['store']
 
             current_date = datetime.now().strftime('%Y-%m-%d')
             if wish_list['product_id'] is None:
