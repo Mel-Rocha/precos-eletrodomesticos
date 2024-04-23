@@ -31,12 +31,15 @@ async def automation_product(product: str, site_domain: str = 'https://www.ikesa
 
 @router.get("/create_or_update/")
 async def create_or_update():
-    wish_lists = await WishList.all().values()
+    # Returns variables
     messages = {}
     status_code = None
+
+    # Retrieve and processing WishList
+    wish_lists = await WishList.all().values()
     for wish_list in wish_lists:
         try:
-
+            # Extract product information
             automation = AutomationSearchProduct()
             redirected_url = automation.search_product_on_site(wish_list['wish_title'])
             product_info = await extract_info_from_url(redirected_url)
@@ -44,9 +47,9 @@ async def create_or_update():
             price = product_info['price']
             store = product_info['store']
 
+            # Create product
             current_date = datetime.now().strftime('%Y-%m-%d')
             if wish_list['product_id'] is None:
-                # Create a new Product without specifying an id
                 product = await Product.create(
                     name=product_name,
                     store=store,
@@ -54,6 +57,7 @@ async def create_or_update():
                     price={current_date: price},
                 )
 
+                # Relates the newly created product to the corresponding wish_list
                 wish_list['product_id'] = product.id
                 await WishList.filter(id=wish_list['id']).update(product_id=product.id)
 
@@ -71,6 +75,7 @@ async def create_or_update():
                     }
                 )
 
+                # If the product already exists, update it
                 if not created:
                     product.name = product_name
                     product.store = store
