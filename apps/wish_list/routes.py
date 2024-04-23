@@ -15,6 +15,26 @@ router = APIRouter()
 
 @router.get("/")
 async def get_wish_list_all() -> Page[WishListSchema]:
+    """
+    Objective:
+        retrieve all WishList objects and present them in page format
+
+
+    Parameters:
+        Optional:
+        page (int) : The page number to be displayed.
+        size (int) : The number of items to be displayed per page.
+
+
+    returns:
+        dict: A dictionary that contains the following keys:
+        - 'items': A list of dictionaries, where each dictionary represents a WishList object.
+        - 'total': The total number of WishList objects.
+        - 'page': The current page number.
+        - 'size': The number of items displayed per page.
+        - 'pages': The total number of pages.
+    """
+
     wish_list_all = await WishList.all().values()
     return paginate(wish_list_all)
 
@@ -23,6 +43,27 @@ add_pagination(router)
 
 @router.post("/upload")
 async def upload_wish_list(file: UploadFile = File(...)):
+    """
+    Objective:
+        This endpoint is responsible for uploading a spreadsheet containing a list of wishes.
+
+
+    Parameters:
+        Mandatory:
+        file (UploadFile): The spreadsheet containing the list of wishes.
+
+
+    Returns:
+        JSONResponse: A JSON response that contains the following variables:
+        - 'content': A dictionary that contains the key 'message'. Is a string that indicates the result of the upload.
+        - 'status_code': An HTTP status code indicating the upload result.
+
+        The 'status_code' is an HTTP status code that indicates the result of the operation. It could be one of the
+        following:
+        - 201: The upload was successful.
+        - 400: An error occurred during the upload.
+        - 500: An internal server error occurred.
+    """
     try:
         # File reading
         contents = await file.read()
