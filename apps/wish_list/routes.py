@@ -51,16 +51,16 @@ async def upload_wish_list(file: UploadFile = File(...)):
         df = df.drop('NEED_TO_ACQUIRE', axis=1)
 
         # Check for duplicate wish_titles in the spreadsheet
-        wish_titles = df['wish_title'].tolist()
-        if len(wish_titles) != len(set(wish_titles)):
-            return JSONResponse(content={"message": "The spreadsheet contains duplicate wish_titles"},
-                                status_code=400)
-
-        # Format conversion required to create bulk objects
-        data_to_insert = df.to_dict(orient='records')
+        seen_wish_titles = set()
+        unique_rows = []
+        for _, row in df.iterrows():
+            wish_title = row['wish_title']
+            if wish_title not in seen_wish_titles:
+                seen_wish_titles.add(wish_title)
+                unique_rows.append(row.to_dict())
 
         # Bulk creation
-        await WishList.bulk_create([WishList(**row) for row in data_to_insert])
+        await WishList.bulk_create([WishList(**row) for row in unique_rows])
 
         return JSONResponse(content={"message": "Wish list uploaded successfully"},
                             status_code=201)
