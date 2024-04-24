@@ -41,7 +41,7 @@ async def extract_product_price_store(url: str):
 
 
 @router.get("/automation/")
-async def automation_product(product: str, site_domain: str = 'https://www.ikesaki.com.br'):
+async def automation_product(specific_product: str, site_domain: str = 'https://www.ikesaki.com.br'):
     """
     Objective:
         This endpoint is responsible for automating the process of extracting product information from a website.
@@ -49,7 +49,7 @@ async def automation_product(product: str, site_domain: str = 'https://www.ikesa
 
     Parameters:
         Mandatory:
-        product (str): The name of the product to be searched.
+        specific_product (str): The name of the product to be searched.
 
         Optional:
         site_domain (str): The domain of the site where the product will be searched.
@@ -70,7 +70,7 @@ async def automation_product(product: str, site_domain: str = 'https://www.ikesa
 
     try:
         automation = AutomationSearchProduct()
-        redirected_url = automation.search_product(product, site_domain)
+        redirected_url = automation.search_product(specific_product, site_domain)
         return await extract_info_from_url(redirected_url)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

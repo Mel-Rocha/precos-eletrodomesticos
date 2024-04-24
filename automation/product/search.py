@@ -111,9 +111,9 @@ class AutomationSearchProduct:
 
             while True:
                 # Construct the URL with the page number
-                url = f"{search_url}&page={page_number}"
+                url_page_list = f"{search_url}&page={page_number}"
 
-                self.driver.get(url)
+                self.driver.get(url_page_list)
                 time.sleep(2)
 
                 html_content = self.driver.page_source
@@ -153,11 +153,11 @@ class AutomationSearchProduct:
                     else:
                         print("Não houve redirecionamento após clicar na imagem.")
 
-                    # Returning to the page that lists the image of all products
+                    # Returning to the all product listing page
                     self.driver.back()
                     time.sleep(2)
 
-                # Increment the page number
+                # Advance to the next page
                 page_number += 1
 
         finally:
