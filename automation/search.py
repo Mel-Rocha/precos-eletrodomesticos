@@ -27,7 +27,7 @@ class AutomationSearchProduct:
         if self.driver:
             self.driver.quit()
 
-    def search_product(self, product, site_domain="https://www.ikesaki.com.br/"):
+    def search_product(self, specific_product, site_domain="https://www.ikesaki.com.br/"):
         """
         Objective:
         Search the domain website for the specific product
@@ -42,7 +42,7 @@ class AutomationSearchProduct:
         self.driver.get(site_domain)
         time.sleep(2)
         search_box = self.driver.find_element('xpath', '//*[@id="downshift-0-input"]')
-        search_box.send_keys(product, Keys.ENTER)
+        search_box.send_keys(specific_product, Keys.ENTER)
         time.sleep(5)
 
         html_content = self.driver.page_source
@@ -73,7 +73,7 @@ class AutomationSearchProduct:
 
         return current_url
 
-    def search_product_all(self, product, site_domain="https://www.ikesaki.com.br/"):
+    def search_product_all(self, generic_product, site_domain="https://www.ikesaki.com.br/"):
         self.start_driver()
 
         try:
@@ -82,7 +82,7 @@ class AutomationSearchProduct:
 
             # Run the search
             search_box = self.driver.find_element(By.XPATH, '//*[@id="downshift-0-input"]')
-            search_box.send_keys(product, Keys.ENTER)
+            search_box.send_keys(generic_product, Keys.ENTER)
             time.sleep(5)
 
             current_url_all = []
@@ -129,7 +129,10 @@ class AutomationSearchProduct:
 
                 # Proceed with the results on the next page if they exist
                 try:
-                    next_page_button = self.driver.find_element(By.XPATH, '//*[@aria-label="Next"]')
+                    next_page_button = self.driver.find_element(By.XPATH, '/html/body/div[2]/div/div[1]/div/div['
+                                                                          '2]/div/div[2]/section/div[2]/div/div['
+                                                                          '2]/div/div[2]/div/div['
+                                                                          '7]/div/div/div/div/div/a/div')
                     if next_page_button.get_attribute('aria-disabled') == 'true':
                         break
                     else:
