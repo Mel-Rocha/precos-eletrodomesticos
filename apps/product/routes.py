@@ -70,7 +70,7 @@ async def automation_product(product: str, site_domain: str = 'https://www.ikesa
 
     try:
         automation = AutomationSearchProduct()
-        redirected_url = automation.search_product_on_site(product, site_domain)
+        redirected_url = automation.search_product(product, site_domain)
         return await extract_info_from_url(redirected_url)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -107,7 +107,7 @@ async def create_or_update():
         try:
             # Extract product information
             automation = AutomationSearchProduct()
-            redirected_url = automation.search_product_on_site(wish_list['wish_title'])
+            redirected_url = automation.search_product(wish_list['wish_title'])
             product_info = await extract_info_from_url(redirected_url)
             product_name = product_info['product']
             price = product_info['price']

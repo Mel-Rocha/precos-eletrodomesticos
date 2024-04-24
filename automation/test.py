@@ -7,7 +7,7 @@ def test_search_product_on_site():
     product = "Joico"
     site_domain = "https://www.ikesaki.com.br/"
 
-    redirected_url = automation.search_product_on_site(product, site_domain)
+    redirected_url = automation.search_product(product, site_domain)
 
     print(redirected_url)
 
