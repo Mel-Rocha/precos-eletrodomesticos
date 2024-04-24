@@ -52,23 +52,28 @@ class AutomationSearchProduct:
                     try:
                         # Execute um script JavaScript para clicar no elemento
                         self.driver.execute_script("arguments[0].click();", img_element)
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        print(f"Erro ao clicar na imagem: {e}")
+                        continue
 
                     time.sleep(3)
 
-                    if self.driver.current_url != site_domain:
-                        print("Redirecionado para:", self.driver.current_url)
-                        urls.append(self.driver.current_url)
-                    else:
-                        print("Não houve redirecionamento após clicar na imagem.")
+                    try:
+                        if self.driver.current_url != site_domain:
+                            print("Redirecionado para:", self.driver.current_url)
+                            urls.append(self.driver.current_url)
+                        else:
+                            print("Não houve redirecionamento após clicar na imagem.")
+                    except Exception as e:
+                        print(f"Erro ao obter a URL atual: {e}")
+                        continue
 
                     # Volta para a página anterior para clicar na próxima imagem
                     self.driver.back()
                     time.sleep(2)
 
                 # Verifica se há próximo botão de página e clica nele
-            next_page_button = self.driver.find_element_by_xpath('//*[@aria-label="Next"]')
+            next_page_button = self.driver.find_element('xpath', '//*[@aria-label="Next"]')
             if next_page_button.get_attribute('aria-disabled') == 'true':
                 break
             else:
