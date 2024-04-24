@@ -34,8 +34,13 @@ class AutomationSearchProduct:
         through automation, and click on the first corresponding product.
 
         Parameters:
+        Mandatory:
+        specific_product = "Shampoo Wella Professionals Invigo Nutri-Enrich 1000ml"
+        Optional:
         site_domain = "https://www.ikesaki.com.br/"
-        product = "Esmalte Vermelho"
+
+        Return:
+        current_url: str - The URL of the specific product.
         """
         self.start_driver()
 
@@ -74,6 +79,20 @@ class AutomationSearchProduct:
         return current_url
 
     def search_product_all(self, generic_product, site_domain="https://www.ikesaki.com.br/"):
+        """
+        Objective:
+        Search the domain website for the generic product
+        through automation and click on all corresponding products.
+
+        Parameters:
+        Mandatory:
+        generic_product = "Shampoo"
+        Optional:
+        site_domain = "https://www.ikesaki.com.br/"
+
+        Return:
+        current_url_all: list - List of urls for each product
+        """
         self.start_driver()
 
         try:
