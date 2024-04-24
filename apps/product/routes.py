@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 from apps.wish_list.models import WishList
 from apps.product.models import Product
-from automation.search import AutomationSearchProduct
+from automation.product.search import AutomationSearchProduct
 from apps.product.utils import extract_info_from_url
 
 load_dotenv()
