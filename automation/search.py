@@ -3,6 +3,7 @@ import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -90,8 +91,12 @@ class AutomationSearchProduct:
                 for i, img in enumerate(img_elements, start=1):
                     img_xpath = f'//*[@id="gallery-layout-container"]/div[{i}]/section/a/article/div[1]/div[1]/div/div/img'
 
-                    # Aguarda até que o elemento esteja visível
-                    WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, img_xpath)))
+                    try:
+                        # Aguarda até que o elemento esteja visível
+                        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, img_xpath)))
+                    except TimeoutException:
+                        print(f"O elemento com o XPath {img_xpath} não foi encontrado dentro do tempo limite.")
+                        continue
 
                     img_element = self.driver.find_element('xpath', img_xpath)
 
