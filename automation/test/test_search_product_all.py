@@ -3,7 +3,7 @@ from automation.search import AutomationSearchProduct
 
 def test_search_product_all():
     automation = AutomationSearchProduct()
-    product = "Cabelo"
+    product = "Jonsons e Jonsons"
     site_domain = "https://www.ikesaki.com.br/"
     urls = automation.search_product_all(product, site_domain)
     print(urls)
