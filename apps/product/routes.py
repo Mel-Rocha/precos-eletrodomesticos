@@ -76,6 +76,19 @@ async def automation_product(specific_product: str, site_domain: str = 'https://
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/create/")
+async def create_product(generic_product: str, site_domain: str = 'https://www.ikesaki.com.br'):
+    try:
+        automation = AutomationSearchProduct()
+        redirected_urls = automation.search_product_all(generic_product, site_domain)
+        products = []
+        for url in redirected_urls:
+            products.append(await extract_info_from_url(url))
+        return products
+    except Exception as e:
+        return JSONResponse(content={"message": str(e)}, status_code=500)
+
+
 @router.get("/create_or_update/")
 async def create_or_update():
     """

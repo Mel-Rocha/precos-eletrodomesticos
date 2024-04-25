@@ -1,4 +1,5 @@
 import re
+import time
 from urllib.parse import urlparse
 
 import requests
@@ -20,9 +21,21 @@ class ExtractProductPriceStore:
         self.soup = BeautifulSoup(self.response.content, 'html.parser')
 
     def _get_response(self):
-        response = requests.get(self.url)
-        if response.status_code != 200:
-            raise Exception("URL inválida ou não encontrada")
+        headers = {'User-Agent': 'My User Agent 1.0'}
+        for i in range(10):
+            try:
+                response = requests.get(self.url, headers=headers)
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as err:
+                if response.status_code == 429:
+                    print("Too many requests. Waiting and trying again.")
+                    time.sleep(2 ** i)
+                    continue
+                else:
+                    raise Exception(f"URL inválida ou não encontrada. "
+                                    f"URL: {self.url} "
+                                    f"STATUS CODE: {response.status_code}") from err
+            break
         return response
 
     def extract_product(self):
@@ -31,9 +44,6 @@ class ExtractProductPriceStore:
         return product
 
     def extract_price(self):
-        if self.response.status_code != 200:
-            raise Exception("URL inválida ou não encontrada")
-
         price_from_regex = None
         pattern = r'"Value"\s*:\s*([\d.]+)'
         matches = re.findall(pattern, self.response.text)
