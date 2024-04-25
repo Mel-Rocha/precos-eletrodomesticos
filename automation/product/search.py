@@ -44,37 +44,49 @@ class AutomationSearchProduct:
         """
         self.start_driver()
 
-        self.driver.get(site_domain)
-        time.sleep(2)
-        search_box = self.driver.find_element('xpath', '//*[@id="downshift-0-input"]')
-        search_box.send_keys(specific_product, Keys.ENTER)
-        time.sleep(5)
+        try:
+            # Search for the product
+            self.driver.get(site_domain)
+            time.sleep(2)
+            search_box = self.driver.find_element('xpath', '//*[@id="downshift-0-input"]')
+            search_box.send_keys(specific_product, Keys.ENTER)
+            time.sleep(5)
 
-        html_content = self.driver.page_source
+            # Product search page analysis
+            html_content = self.driver.page_source
 
-        soup = BeautifulSoup(html_content, 'html.parser')
+            soup = BeautifulSoup(html_content, 'html.parser')
 
-        gallery_div = soup.find('div', {'id': 'gallery-layout-container'})
-        if gallery_div:
-            first_img = gallery_div.find('img')
-            if first_img:
-                img_element = self.driver.find_element('xpath',
-                                                       '//*[@id="gallery-layout-container"]/div/section/a/article'
-                                                       '/div[1]/div[1]/div/div/img')
+            gallery_div = soup.find('div', {'id': 'gallery-layout-container'})
+            if gallery_div:
+                first_img = gallery_div.find('img')
+                if first_img:
+                    img_xpath = ('//*[@id="gallery-layout-container"]/div/section/a/article'
+                                 '/div[1]/div[1]/div/div/img')
+                    try:
+                        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, img_xpath)))
+                        img_element = self.driver.find_element(By.XPATH, img_xpath)
+                        self.driver.execute_script("arguments[0].click();", img_element)  # Solving problem of
+                        # intercepted elements
+                        time.sleep(3)
+                    except TimeoutException as e:
+                        print(f"Erro ao clicar na imagem: Tempo de execução limite {e}")
+                        logging.error("O elemento foi encontrado, mas não se tornou visivel dentro do tempo limite.")
+                    except NoSuchElementException as e:
+                        print(f"Erro ao clicar na imagem: Imagem não encontrada {e}.")
+                        logging.error("O elemento não foi encontrado.")
 
-                img_element.click()
+                    # Checking redirection to the specific result page
+                    if self.driver.current_url != site_domain:
+                        print("Redirecionado para:", self.driver.current_url)
+                    else:
+                        print("Não houve redirecionamento após clicar na imagem.")
 
-                time.sleep(3)
+            time.sleep(5)
+            current_url = self.driver.current_url
 
-                if self.driver.current_url != site_domain:
-                    print("Redirecionado para:", self.driver.current_url)
-                else:
-                    print("Não houve redirecionamento após clicar na imagem.")
-
-        time.sleep(5)
-        current_url = self.driver.current_url
-
-        self.stop_driver()
+        finally:
+            self.stop_driver()
 
         return current_url
 
