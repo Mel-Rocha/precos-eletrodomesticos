@@ -62,6 +62,7 @@ class CoreAutomation:
         selenium_proxy.ssl_proxy = proxy
 
         chrome_options = Options()
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
         chrome_options.add_argument(f'user-agent={random.choice(user_agents)}')
         chrome_options.add_argument('start-maximized')
