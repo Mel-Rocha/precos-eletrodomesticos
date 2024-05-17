@@ -1,6 +1,8 @@
 import logging
+from datetime import datetime
 
 from bs4 import BeautifulSoup
+from selenium.webdriver.common.by import By
 
 from automation.core_automation.base_automation import CoreAutomation
 
@@ -20,27 +22,35 @@ class BackhoeExtract(CoreAutomation):
         self.driver.get(self.backhoe_url_specific)
         html_content = self.driver.page_source
         self.soup = BeautifulSoup(html_content, 'html.parser')
+        self.div_information = self.driver.find_element(By.XPATH, '//*[@id="tab1"]/div/div/div[1]')
 
     def fabricator_extract(self):
-        pass
+        fabricator_element = self.soup.select_one('p:contains("Marca") > strong')
+        return fabricator_element.text.strip() if fabricator_element else None
 
     def model_extract(self):
-        pass
+        model_element = self.soup.select_one('p:contains("Modelo") > strong')
+        return model_element.text.strip() if model_element else None
 
     def year_extract(self):
-        pass
+        year_element = self.soup.select_one('p:contains("Ano") > strong')
+        return year_element.text.strip() if year_element else None
 
     def price_extract(self):
-        pass
+        price_element = self.soup.select_one('p:contains("Preço") > strong')
+        return price_element.text.strip() if price_element else None
 
     def worked_hours_extract(self):
-        pass
-
-    def crawling_date_extract(self):
-        pass
+        worked_hours_element = self.soup.select_one('p:contains("Horas") > strong')
+        return worked_hours_element.text.strip() if worked_hours_element else None
 
     def url_extract(self):
-        pass
+        return self.backhoe_url_specific
+
+    @staticmethod
+    def crawling_date_extract():
+        now = datetime.now()
+        return now.strftime("%Y-%m-%d %H:%M:%S")
 
     def extract(self):
         backhoe = {
@@ -49,8 +59,8 @@ class BackhoeExtract(CoreAutomation):
             'year': self.year_extract(),
             'price': self.price_extract(),
             'worked_hours': self.worked_hours_extract(),
-            'crawling_date': self.crawling_date_extract(),
             'url': self.url_extract(),
+            'crawling_date': BackhoeExtract.crawling_date_extract(),
         }
 
         return backhoe
@@ -58,6 +68,6 @@ class BackhoeExtract(CoreAutomation):
 
 if __name__ == "__main__":
     e = BackhoeExtract(
-        "https://www.caminhoesecarretas.com.br/veiculo/nova-andradina/ms/retro-escavadeira/case/580l/tk-tratores"
-        "/1113197")
+        "https://www.caminhoesecarretas.com.br/veiculo/palmas/to/retro-escavadeira/hyundai/h940c/2014/tracao-4x4"
+        "/cabine-fechada/dellatorre-maquinas-pesadas/1141349")
     extract = e.extract()
