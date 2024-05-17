@@ -1,4 +1,12 @@
+import time
 import logging
+
+from bs4 import BeautifulSoup
+from selenium.webdriver.common.by import By
+from selenium.common import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from automation.core_automation.base_automation import CoreAutomation
 
@@ -7,39 +15,84 @@ logging.basicConfig(level=logging.INFO)
 
 class CaminhoesECarretasAutomation(CoreAutomation):
     """
-    Objetivo: Cada método sufixado com url_all, deve iterar sobre cada máquina alvo do crawling,
-    clicar em todas as combinações possíveis de marca e modelo para a máquina e pesquisa-lá. Então como retorno
-    devolver uma lista com cada url especifica.
+    Objetivo: Iterar sobre todos anúncios da respectiva máquina e coletar sua url específica.
+
+    Resultado: Lista com todas urls da máquina
     """
 
-    @staticmethod
-    def combine_harvester_url_all():
-        pass
+    def __init__(self):
+        super().__init__()
+        self.old_len = 0
 
     @staticmethod
-    def backhoe_url_all():
-        pass
+    def automation_validation(page_number, num_div_elements, current_url_all, old_len):
+        num_urls_extracted = len(current_url_all) - old_len
+        print(f"Número da Página: {page_number}")
+        print(f"Quantidade de Veículos: {num_div_elements}")
+        print(f"Quantidade de URLs extraídas: {num_urls_extracted}")
 
-    @staticmethod
-    def loader_url_all():
-        pass
+    def backhoe_url_all(self):
+        self.driver.get("https://www.caminhoesecarretas.com.br/venda/retro%20escavadeira/24?page=0")
+        current_url_all = []
+        page_number = 0
 
-    @staticmethod
-    def small_loader_url_all():
-        pass
+        try:
+            while True:
+                url_page_list = f"https://www.caminhoesecarretas.com.br/venda/retro%20escavadeira/24?page={page_number}"
+                self.driver.get(url_page_list)
+                time.sleep(2)
 
-    @staticmethod
-    def mini_excavator_url_all():
-        pass
+                html_content = self.driver.page_source
+                soup = BeautifulSoup(html_content, 'html.parser')
 
-    @staticmethod
-    def crawler_tractor_url_all():
-        pass
+                all_product = soup.find('div', class_=['productList', 'product-load-more'])
+                if not all_product:
+                    break
 
-    def test_access_url(self):
-        self.driver.get("https://www.caminhoesecarretas.com.br/")
+                div_elements = all_product.find_all('div', class_='item-veiculo')
+                num_div_elements = len(div_elements)
+                if num_div_elements == 0:
+                    break
+
+                if div_elements:
+                    self.old_len = len(current_url_all)
+
+                    for i, img in enumerate(div_elements, start=0):
+                        img_xpath = (f'//*[@id="ContentPlaceHolder1_lvVeiculo_lnkVeiculo_{i}"]/img')
+                        logging.info(img_xpath)
+
+                        try:
+                            WebDriverWait(self.driver, 10).until(
+                                EC.visibility_of_element_located((By.XPATH, img_xpath)))
+                            img_element = self.driver.find_element(By.XPATH, img_xpath)
+                            logging.info(self.driver.current_url)
+                            self.driver.execute_script("arguments[0].click();", img_element)
+                            time.sleep(3)
+                            current_url_all.append(self.driver.current_url)
+                            logging.info(current_url_all)
+                        except TimeoutException as e:
+                            print(f"Erro ao clicar na imagem: Tempo de execução limite {e}")
+                            logging.error(
+                                "O elemento foi encontrado, mas não se tornou visivel dentro do tempo limite.")
+                            continue
+                        except NoSuchElementException as e:
+                            print(f"Erro ao clicar na imagem: Imagem não encontrada {e}.")
+                            logging.error("O elemento não foi encontrado.")
+                            continue
+
+                        self.driver.back()
+                        time.sleep(2)
+
+                self.automation_validation(page_number, num_div_elements, current_url_all, self.old_len)
+
+                page_number += 1
+        finally:
+            super().stop_driver()
+
+            print(f'Total URLs: {len(current_url_all)} URLs: {current_url_all}')
+            return current_url_all
 
 
 if __name__ == "__main__":
     a = CaminhoesECarretasAutomation()
-    test = a.test_access_url()
+    access = a.backhoe_url_all()
