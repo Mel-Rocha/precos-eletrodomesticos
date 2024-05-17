@@ -20,6 +20,17 @@ class CaminhoesECarretasAutomation(CoreAutomation):
     Resultado: Lista com todas urls da máquina
     """
 
+    def __init__(self):
+        super().__init__()
+        self.old_len = 0
+
+    @staticmethod
+    def automation_validation(page_number, num_div_elements, current_url_all, old_len):
+        num_urls_extracted = len(current_url_all) - old_len
+        print(f"Número da Página: {page_number}")
+        print(f"Quantidade de Veículos: {num_div_elements}")
+        print(f"Quantidade de URLs extraídas: {num_urls_extracted}")
+
     def backhoe_url_all(self):
         self.driver.get("https://www.caminhoesecarretas.com.br/venda/retro%20escavadeira/24?page=0")
         current_url_all = []
@@ -40,17 +51,19 @@ class CaminhoesECarretasAutomation(CoreAutomation):
 
                 div_elements = all_product.find_all('div', class_='item-veiculo')
                 num_div_elements = len(div_elements)
-                print(f"Number of div elements found: {num_div_elements}")
                 if num_div_elements == 0:
                     break
 
                 if div_elements:
+                    self.old_len = len(current_url_all)
+
                     for i, img in enumerate(div_elements, start=0):
                         img_xpath = (f'//*[@id="ContentPlaceHolder1_lvVeiculo_lnkVeiculo_{i}"]/img')
                         logging.info(img_xpath)
 
                         try:
-                            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, img_xpath)))
+                            WebDriverWait(self.driver, 10).until(
+                                EC.visibility_of_element_located((By.XPATH, img_xpath)))
                             img_element = self.driver.find_element(By.XPATH, img_xpath)
                             logging.info(self.driver.current_url)
                             self.driver.execute_script("arguments[0].click();", img_element)
@@ -59,7 +72,8 @@ class CaminhoesECarretasAutomation(CoreAutomation):
                             logging.info(current_url_all)
                         except TimeoutException as e:
                             print(f"Erro ao clicar na imagem: Tempo de execução limite {e}")
-                            logging.error("O elemento foi encontrado, mas não se tornou visivel dentro do tempo limite.")
+                            logging.error(
+                                "O elemento foi encontrado, mas não se tornou visivel dentro do tempo limite.")
                             continue
                         except NoSuchElementException as e:
                             print(f"Erro ao clicar na imagem: Imagem não encontrada {e}.")
@@ -69,11 +83,13 @@ class CaminhoesECarretasAutomation(CoreAutomation):
                         self.driver.back()
                         time.sleep(2)
 
+                self.automation_validation(page_number, num_div_elements, current_url_all, self.old_len)
+
                 page_number += 1
         finally:
             super().stop_driver()
 
-            print(f'Quantidade de Veículos: {len(current_url_all)} URLS: {current_url_all}')
+            print(f'Total URLs: {len(current_url_all)} URLs: {current_url_all}')
             return current_url_all
 
 
