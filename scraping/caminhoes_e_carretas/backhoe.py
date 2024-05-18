@@ -68,6 +68,6 @@ class BackhoeExtract(CoreAutomation):
 
 if __name__ == "__main__":
     e = BackhoeExtract(
-        "https://www.caminhoesecarretas.com.br/veiculo/palmas/to/retro-escavadeira/hyundai/h940c/2014/tracao-4x4"
-        "/cabine-fechada/dellatorre-maquinas-pesadas/1141349")
+        "https://www.caminhoesecarretas.com.br/veiculo/lavras/mg/retro-escavadeira/case/580h/1994/cabine-aberta"
+        "/machine-tratores/1178988")
     extract = e.extract()
