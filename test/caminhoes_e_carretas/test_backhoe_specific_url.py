@@ -11,20 +11,16 @@ logging.basicConfig(level=logging.INFO)
 
 class BackhoeExtract(CoreAutomation):
     """
-    Objetivo: Com base na lista de URLs especificadas, fazer a extração das informações relevantes.
+    Objetivo: Com base na url especifica fazer a extração das informações relevantes,
+    testando assim cada url individualmente.
 
-    Obrigatório Fornecer: Lista de URLs.
-
-    Retorno: Lista de dicionários com valores obtidos de cada produto específico.
+    Retorno: Dicionário com valores obtidos do produto específico.
     """
 
-    def __init__(self, backhoe_urls):
+    def __init__(self, backhoe_url_specific):
         super().__init__()
-        self.backhoe_urls = backhoe_urls
-        self.current_url = None
-
-    def fetch_page(self, url):
-        self.driver.get(url)
+        self.backhoe_url_specific = backhoe_url_specific
+        self.driver.get(self.backhoe_url_specific)
         html_content = self.driver.page_source
         self.soup = BeautifulSoup(html_content, 'html.parser')
         self.div_information = self.driver.find_element(By.XPATH, '//*[@id="tab1"]/div/div/div[1]')
@@ -50,7 +46,7 @@ class BackhoeExtract(CoreAutomation):
         return worked_hours_element.text.strip() if worked_hours_element else None
 
     def url_extract(self):
-        return self.current_url
+        return self.backhoe_url_specific
 
     @staticmethod
     def crawling_date_extract():
@@ -58,21 +54,22 @@ class BackhoeExtract(CoreAutomation):
         return now.strftime("%Y-%m-%d %H:%M:%S")
 
     def extract(self):
-        backhoe_list = []
-        for url in self.backhoe_urls:
-            self.current_url = url
-            self.fetch_page(url)
-            backhoe = {
-                'fabricator': self.fabricator_extract(),
-                'model': self.model_extract(),
-                'year': self.year_extract(),
-                'price': self.price_extract(),
-                'worked_hours': self.worked_hours_extract(),
-                'url': self.url_extract(),
-                'crawling_date': BackhoeExtract.crawling_date_extract(),
-            }
-            backhoe_list.append(backhoe)
+        backhoe = {
+            'fabricator': self.fabricator_extract(),
+            'model': self.model_extract(),
+            'year': self.year_extract(),
+            'price': self.price_extract(),
+            'worked_hours': self.worked_hours_extract(),
+            'url': self.url_extract(),
+            'crawling_date': BackhoeExtract.crawling_date_extract(),
+        }
 
-        self.driver.quit()
-        return backhoe_list
+        print(backhoe)
+        return backhoe
 
+
+if __name__ == "__main__":
+    e = BackhoeExtract(
+        "https://www.caminhoesecarretas.com.br/veiculo/lavras/mg/retro-escavadeira/case/580h/1994/cabine-aberta"
+        "/machine-tratores/1178988")
+    extract = e.extract()

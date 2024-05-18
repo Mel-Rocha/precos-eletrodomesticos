@@ -1,5 +1,7 @@
+from typing import List
+
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Query
 from fastapi_pagination import Page, add_pagination, paginate
 
 from apps.caminhoes_e_carretas.models import CaminhoesECarretas
@@ -20,7 +22,8 @@ async def get_caminhoes_e_carretas_all() -> Page[CaminhoesECarretasSchema]:
 add_pagination(router)
 
 
-@router.get("/extract/specific/")
-async def extract_backhoe_info(url: str):
-    e = BackhoeExtract(url)
-    return e.extract()
+@router.get("/extract/backhoe_all/")
+async def extract_backhoe_all(urls: List[str] = Query(...)):
+    e = BackhoeExtract(urls)
+    result = e.extract()
+    return {"result": result}
