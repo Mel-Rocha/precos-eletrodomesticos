@@ -4,12 +4,12 @@ from typing import List
 import pandas as pd
 from dotenv import load_dotenv
 from fastapi import APIRouter, Query
-from fastapi_pagination import Page, add_pagination, paginate
 from starlette.responses import StreamingResponse
+from fastapi_pagination import Page, add_pagination, paginate
 
 from apps.caminhoes_e_carretas.models import CaminhoesECarretas
-from apps.caminhoes_e_carretas.schema import CaminhoesECarretasSchema
 from scraping.caminhoes_e_carretas.backhoe import BackhoeExtract
+from apps.caminhoes_e_carretas.schema import CaminhoesECarretasSchema
 
 load_dotenv()
 
@@ -38,6 +38,11 @@ async def extract_urls(urls: List[str] = Query(...)):
     data = e.extract()
 
     df = pd.DataFrame(data)
+
+    df['crawling_date'] = pd.to_datetime(df['crawling_date'])
+    df.sort_values(by='crawling_date', ascending=False, inplace=True)
+
+    df.drop_duplicates(subset='url', keep='first', inplace=True)
 
     df.rename(columns={
         'fabricator': 'Fabricante',
