@@ -1,12 +1,15 @@
+from io import BytesIO
 from typing import List
 
+import pandas as pd
 from dotenv import load_dotenv
 from fastapi import APIRouter, Query
+from starlette.responses import StreamingResponse
 from fastapi_pagination import Page, add_pagination, paginate
 
 from apps.caminhoes_e_carretas.models import CaminhoesECarretas
-from apps.caminhoes_e_carretas.schema import CaminhoesECarretasSchema
 from scraping.caminhoes_e_carretas.backhoe import BackhoeExtract
+from apps.caminhoes_e_carretas.schema import CaminhoesECarretasSchema
 
 load_dotenv()
 
@@ -27,3 +30,39 @@ async def extract_backhoe_all(urls: List[str] = Query(...)):
     e = BackhoeExtract(urls)
     result = e.extract()
     return {"result": result}
+
+
+@router.get("/backhoe/excel/")
+async def extract_urls(urls: List[str] = Query(...)):
+    e = BackhoeExtract(urls)
+    data = e.extract()
+
+    df = pd.DataFrame(data)
+
+    df['crawling_date'] = pd.to_datetime(df['crawling_date'])
+    df.sort_values(by='crawling_date', ascending=False, inplace=True)
+
+    df.drop_duplicates(subset='url', keep='first', inplace=True)
+
+    df.rename(columns={
+        'fabricator': 'Fabricante',
+        'model': 'Modelo',
+        'year': 'Ano',
+        'price': 'Preço',
+        'worked_hours': 'Horas',
+        'url': 'URL',
+        'crawling_date': 'Data da Busca'
+    }, inplace=True)
+
+    df['Cód. Somos'] = ''
+
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Sheet1')
+
+    output.seek(0)
+
+    return StreamingResponse(output, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                             headers={
+                                 'Content-Disposition': 'attachment; filename="dataframe.xlsx"'
+                             })
