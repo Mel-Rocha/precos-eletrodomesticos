@@ -10,6 +10,7 @@ from fastapi_pagination import Page, add_pagination, paginate
 from apps.caminhoes_e_carretas.models import CaminhoesECarretas
 from scraping.caminhoes_e_carretas.backhoe import BackhoeExtract
 from apps.caminhoes_e_carretas.schema import CaminhoesECarretasSchema
+from automation.caminhoes_e_carretas.collect_url import CaminhoesECarretasAutomation
 
 load_dotenv()
 
@@ -33,9 +34,12 @@ async def extract_backhoe_all(urls: List[str] = Query(...)):
 
 
 @router.get("/backhoe/excel/")
-async def extract_urls(urls: List[str] = Query(...)):
-    e = BackhoeExtract(urls)
-    data = e.extract()
+async def backhoe():
+    collect_urls = CaminhoesECarretasAutomation()
+    collected_urls = collect_urls.backhoe_url_all()
+
+    extraction = BackhoeExtract(collected_urls)
+    data = extraction.extract()
 
     df = pd.DataFrame(data)
 
