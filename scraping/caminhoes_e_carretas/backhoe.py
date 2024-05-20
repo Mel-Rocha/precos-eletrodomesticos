@@ -1,3 +1,4 @@
+import re
 import logging
 from datetime import datetime
 
@@ -77,11 +78,14 @@ class BackhoeExtract(CoreAutomation):
         for url in self.backhoe_urls:
             self.current_url = url
             self.fetch_page(url)
+            price = self.price_extract()
+            if price is None or not re.search(r'\d', price):
+                continue
             backhoe = {
                 'fabricator': self.fabricator_extract(),
                 'model': self.model_extract(),
                 'year': self.year_extract(),
-                'price': self.price_extract(),
+                'price': price,
                 'worked_hours': self.worked_hours_extract(),
                 'url': self.url_extract(),
                 'crawling_date': BackhoeExtract.crawling_date_extract(),
@@ -92,5 +96,17 @@ class BackhoeExtract(CoreAutomation):
                 self.extract_failure_analysis.append(self.fail_backhoe)
 
         self.driver.quit()
+        logging.info(backhoe_list)
+        logging.info(self.extract_failure_analysis)
         return backhoe_list, self.extract_failure_analysis
 
+
+if __name__ == "__main__":
+    urls = [
+        "https://www.caminhoesecarretas.com.br/veiculo/maravilha/sc/retro-escavadeira/jcb/4cx11/2009/tracao-4x4/cabi"
+        "ne-fechada/patrolao-maquinas/1181766",
+        "https://www.caminhoesecarretas.com.br/veiculo/aruja/sp/retro-escavadeira/new-holland/b95b/2012/tracao-4x4/c"
+        "abine-fechada/cattrucks/1118497"
+    ]
+    e = BackhoeExtract(urls)
+    extract = e.extract()
