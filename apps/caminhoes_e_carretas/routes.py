@@ -46,11 +46,12 @@ async def backhoe():
     collected_urls, metrics, automation_failure_analysis = collect_urls.backhoe_url_all()
 
     extraction = BackhoeExtract(collected_urls)
-    data, extract_failure_analysis = extraction.extract()
+    data, extract_failure_analysis, not_price = extraction.extract()
 
     logging.info(f"Métricas de desempenho ao obter URLs: {metrics}")
     logging.info(f"Falha ao obter URL, dos seguintes anúncios: {automation_failure_analysis}")
     logging.info(f"Falha na extração: {extract_failure_analysis}")
+    logging.info(f"Anúncios sem Preço: {not_price}")
 
     df = pd.DataFrame(data)
 

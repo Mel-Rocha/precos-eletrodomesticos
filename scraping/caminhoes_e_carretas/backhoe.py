@@ -75,11 +75,13 @@ class BackhoeExtract(CoreAutomation):
 
     def extract(self):
         backhoe_list = []
+        not_price = []
         for url in self.backhoe_urls:
             self.current_url = url
             self.fetch_page(url)
             price = self.price_extract()
             if price is None or not re.search(r'\d', price):
+                not_price.append(url)
                 continue
             backhoe = {
                 'fabricator': self.fabricator_extract(),
@@ -98,7 +100,9 @@ class BackhoeExtract(CoreAutomation):
         self.driver.quit()
         logging.info(backhoe_list)
         logging.info(self.extract_failure_analysis)
-        return backhoe_list, self.extract_failure_analysis
+        logging.info(not_price)
+
+        return backhoe_list, self.extract_failure_analysis, not_price
 
 
 if __name__ == "__main__":
