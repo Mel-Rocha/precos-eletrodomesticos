@@ -2,10 +2,12 @@ import logging
 from io import BytesIO
 from typing import List
 
+import openpyxl
 import pandas as pd
 from dotenv import load_dotenv
 from fastapi import APIRouter, Query
 from starlette.responses import StreamingResponse
+from openpyxl.worksheet.table import Table, TableStyleInfo
 from fastapi_pagination import Page, add_pagination, paginate
 
 from apps.caminhoes_e_carretas.models import CaminhoesECarretas
@@ -36,7 +38,7 @@ async def extract_backhoe_all(urls: List[str] = Query(...)):
     return {"result": result}
 
 
-@router.get("/backhoe/excel/")
+@router.get("/backhoe/excel/", response_class=StreamingResponse)
 async def backhoe():
     collect_urls = CaminhoesECarretasAutomation()
     collected_urls, metrics, automation_failure_analysis = collect_urls.backhoe_url_all()
@@ -67,13 +69,27 @@ async def backhoe():
 
     df['Cód. Somos'] = ''
 
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        df.to_excel(writer, index=False, sheet_name='Sheet1')
+    buffer = BytesIO()
 
-    output.seek(0)
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False)
 
-    return StreamingResponse(output, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                             headers={
-                                 'Content-Disposition': 'attachment; filename="dataframe.xlsx"'
-                             })
+    buffer.seek(0)
+
+    book = openpyxl.load_workbook(buffer)
+    sheet = book.active
+
+    tab = Table(displayName="Table1", ref=sheet.dimensions)
+
+    style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
+                           showLastColumn=False, showRowStripes=True, showColumnStripes=True)
+    tab.tableStyleInfo = style
+
+    sheet.add_table(tab)
+
+    buffer = BytesIO()
+    book.save(buffer)
+    buffer.seek(0)
+
+    return StreamingResponse(buffer, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                             headers={'Content-Disposition': 'attachment; filename="dataframe.xlsx"'})
