@@ -3,6 +3,7 @@ from datetime import datetime
 
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
+from tenacity import retry, stop_after_attempt
 
 from automation.core_automation.base_automation import CoreAutomation
 
@@ -25,6 +26,7 @@ class BackhoeExtract(CoreAutomation):
         self.fail_backhoe = {}
         self.extract_failure_analysis = []
 
+    @retry(stop=stop_after_attempt(3))
     def fetch_page(self, url):
         self.driver.get(url)
         html_content = self.driver.page_source

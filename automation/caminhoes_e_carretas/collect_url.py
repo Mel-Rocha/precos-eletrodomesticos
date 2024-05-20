@@ -3,6 +3,7 @@ import logging
 
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
+from tenacity import stop_after_attempt, retry
 from selenium.common import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -41,8 +42,11 @@ class CaminhoesECarretasAutomation(CoreAutomation):
 
         return validation_dict
 
-    def backhoe_url_all(self):
+    @retry(stop=stop_after_attempt(3))
+    def access_url(self):
         self.driver.get("https://www.caminhoesecarretas.com.br/venda/retro%20escavadeira/24?page=0")
+
+    def backhoe_url_all(self):
         current_url_all = []
         page_number = 0
 
