@@ -23,6 +23,8 @@ class CaminhoesECarretasAutomation(CoreAutomation):
     def __init__(self):
         super().__init__()
         self.old_len = 0
+        self.metrics = []
+        self.automation_failure_analysis = []
 
     @staticmethod
     def automation_validation(page_number, num_div_elements, current_url_all, old_len):
@@ -30,6 +32,14 @@ class CaminhoesECarretasAutomation(CoreAutomation):
         print(f"Número da Página: {page_number}")
         print(f"Quantidade de Veículos: {num_div_elements}")
         print(f"Quantidade de URLs extraídas: {num_urls_extracted}")
+
+        validation_dict = {
+            'page_number': page_number,
+            'ads_found': num_div_elements,
+            'extracted_urls': num_urls_extracted
+        }
+
+        return validation_dict
 
     def backhoe_url_all(self):
         self.driver.get("https://www.caminhoesecarretas.com.br/venda/retro%20escavadeira/24?page=0")
@@ -74,23 +84,27 @@ class CaminhoesECarretasAutomation(CoreAutomation):
                             print(f"Erro ao clicar na imagem: Tempo de execução limite {e}")
                             logging.error(
                                 "O elemento foi encontrado, mas não se tornou visivel dentro do tempo limite.")
+                            self.automation_failure_analysis.append(img_xpath)
                             continue
                         except NoSuchElementException as e:
                             print(f"Erro ao clicar na imagem: Imagem não encontrada {e}.")
                             logging.error("O elemento não foi encontrado.")
+                            self.automation_failure_analysis.append(img_xpath)
                             continue
 
                         self.driver.back()
                         time.sleep(2)
 
-                self.automation_validation(page_number, num_div_elements, current_url_all, self.old_len)
+                metrics = self.automation_validation(page_number, num_div_elements, current_url_all,
+                                                             self.old_len)
+                self.metrics.append(metrics)
 
                 page_number += 1
         finally:
             super().stop_driver()
 
-            print(f'Total URLs: {len(current_url_all)} URLs: {current_url_all}')
-            return current_url_all
+            print(self.metrics)
+            return current_url_all, self.metrics, self.automation_failure_analysis
 
 
 if __name__ == "__main__":

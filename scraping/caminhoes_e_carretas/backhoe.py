@@ -22,31 +22,44 @@ class BackhoeExtract(CoreAutomation):
         super().__init__()
         self.backhoe_urls = backhoe_urls
         self.current_url = None
+        self.fail_backhoe = {}
+        self.extract_failure_analysis = []
 
     def fetch_page(self, url):
         self.driver.get(url)
         html_content = self.driver.page_source
         self.soup = BeautifulSoup(html_content, 'html.parser')
         self.div_information = self.driver.find_element(By.XPATH, '//*[@id="tab1"]/div/div/div[1]')
+        self.fail_backhoe = {url: []}
 
     def fabricator_extract(self):
         fabricator_element = self.soup.select_one('p:contains("Marca") > strong')
+        if fabricator_element is None:
+            self.fail_backhoe[self.current_url].append('fabricator_extract')
         return fabricator_element.text.strip() if fabricator_element else None
 
     def model_extract(self):
         model_element = self.soup.select_one('p:contains("Modelo") > strong')
+        if model_element is None:
+            self.fail_backhoe[self.current_url].append('model_element')
         return model_element.text.strip() if model_element else None
 
     def year_extract(self):
         year_element = self.soup.select_one('p:contains("Ano") > strong')
+        if year_element is None:
+            self.fail_backhoe[self.current_url].append('year_element')
         return year_element.text.strip() if year_element else None
 
     def price_extract(self):
         price_element = self.soup.select_one('p:contains("Preço") > strong')
+        if price_element is None:
+            self.fail_backhoe[self.current_url].append('price_element')
         return price_element.text.strip() if price_element else None
 
     def worked_hours_extract(self):
         worked_hours_element = self.soup.select_one('p:contains("Horas") > strong')
+        if worked_hours_element is None:
+            self.fail_backhoe[self.current_url].append('price_element')
         return worked_hours_element.text.strip() if worked_hours_element else None
 
     def url_extract(self):
@@ -73,6 +86,9 @@ class BackhoeExtract(CoreAutomation):
             }
             backhoe_list.append(backhoe)
 
+            if self.fail_backhoe[url]:
+                self.extract_failure_analysis.append(self.fail_backhoe)
+
         self.driver.quit()
-        return backhoe_list
+        return backhoe_list, self.extract_failure_analysis
 
