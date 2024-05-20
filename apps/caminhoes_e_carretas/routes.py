@@ -1,3 +1,4 @@
+import logging
 from io import BytesIO
 from typing import List
 
@@ -11,6 +12,8 @@ from apps.caminhoes_e_carretas.models import CaminhoesECarretas
 from scraping.caminhoes_e_carretas.backhoe import BackhoeExtract
 from apps.caminhoes_e_carretas.schema import CaminhoesECarretasSchema
 from automation.caminhoes_e_carretas.collect_url import CaminhoesECarretasAutomation
+
+logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
@@ -36,10 +39,14 @@ async def extract_backhoe_all(urls: List[str] = Query(...)):
 @router.get("/backhoe/excel/")
 async def backhoe():
     collect_urls = CaminhoesECarretasAutomation()
-    collected_urls = collect_urls.backhoe_url_all()
+    collected_urls, metrics, automation_failure_analysis = collect_urls.backhoe_url_all()
 
     extraction = BackhoeExtract(collected_urls)
-    data = extraction.extract()
+    data, extract_failure_analysis = extraction.extract()
+
+    logging.info(f"Métricas de desempenho ao obter URLs: {metrics}")
+    logging.info(f"Falha ao obter URL, dos seguintes anúncios: {automation_failure_analysis}")
+    logging.info(f"Falha na extração: {extract_failure_analysis}")
 
     df = pd.DataFrame(data)
 
