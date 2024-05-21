@@ -51,7 +51,7 @@ async def backhoe():
     logging.info(f"Métricas de desempenho ao obter URLs: {metrics}")
     logging.info(f"Falha ao obter URL, dos seguintes anúncios: {automation_failure_analysis}")
     logging.info(f"Falha na extração: {extract_failure_analysis}")
-    logging.info(f"Anúncios sem Preço: {not_price}")
+    logging.info(f"Quantidade de Anúncios sem Preço: {len(not_price)}  URLs Correspondentes: {not_price}")
 
     df = pd.DataFrame(data)
 

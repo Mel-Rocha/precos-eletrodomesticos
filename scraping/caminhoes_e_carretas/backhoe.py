@@ -13,11 +13,14 @@ logging.basicConfig(level=logging.INFO)
 
 class BackhoeExtract(CoreAutomation):
     """
-    Objetivo: Com base na lista de URLs especificadas, fazer a extração das informações relevantes.
+    Objetivo: Com base na lista de URLs especificas de cada anúncio, fazer a extração das informações relevantes.
 
     Obrigatório Fornecer: Lista de URLs.
 
-    Retorno: Lista de dicionários com valores obtidos de cada produto específico.
+    Retorno: tupla contendo:
+        1. backhoe_list: Lista de dicionários com as informações extraídas de cada anúncio.
+        2. extract_failure_analysis: Lista de análises de falhas de extração.
+        3. not_price: Lista de URLs dos anúncios que não têm preço.
     """
 
     def __init__(self, backhoe_urls):
@@ -98,9 +101,10 @@ class BackhoeExtract(CoreAutomation):
                 self.extract_failure_analysis.append(self.fail_backhoe)
 
         self.driver.quit()
-        logging.info(backhoe_list)
-        logging.info(self.extract_failure_analysis)
-        logging.info(not_price)
+
+        logging.info(f"Anúncios Extraídos: {backhoe_list}")
+        logging.info(f"Falha na Extração: {self.extract_failure_analysis}")
+        logging.info(f"Anúncios sem Preço: {not_price}")
 
         return backhoe_list, self.extract_failure_analysis, not_price
 

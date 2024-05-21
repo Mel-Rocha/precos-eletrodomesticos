@@ -16,9 +16,13 @@ logging.basicConfig(level=logging.INFO)
 
 class CaminhoesECarretasAutomation(CoreAutomation):
     """
-    Objetivo: Iterar sobre todos anúncios da respectiva máquina e coletar sua url específica.
+    Objetivo: Iterar sobre todos anúncios da respectiva máquina e coletar suas URLs específicas.
 
-    Resultado: Lista com todas urls da máquina
+    Retorno: tupla contendo:
+        1 - current_url_all: Lista com todas URLs correspondente a cada anúncio.
+        2 - metrics: Lista de dicionários contendo dados de monitoramento da extração.
+        3 - automation_failure_analysis: lista de dicionários contendo a URL específica e o metódo específico onde a
+        falha ocorreu.
     """
 
     def __init__(self):
