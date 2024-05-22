@@ -44,3 +44,19 @@ Aplica as migrações no banco de dados
 ````bash
 aerich upgrade
 ````
+
+## Testes e Segurança
+O coverage executa todos os testes unitários do projeto usando o módulo unittest, e mede a cobertura do código, ou seja, 
+ele verifica quais partes do código foram cobertas pelos testes durante a execução.
+````bash
+coverage run -m unittest discover
+````
+Geração de relatório de corbertura de testes.
+````bash
+coverage report -m
+````
+## Bibliotecas Vulneráveis
+Aferição das bibliotecas vulneráveis no projeto.
+````bash
+pip-audit 
+````
