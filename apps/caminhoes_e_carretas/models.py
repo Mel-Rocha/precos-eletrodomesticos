@@ -1,4 +1,4 @@
-from apps.core_table.models import CoreTable
+from apps.core.models import CoreTable
 
 
 class CaminhoesECarretas(CoreTable):

@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from tenacity import retry, stop_after_attempt
 
-from automation.core_automation.base_automation import CoreAutomation
+from apps.core.base_automation import CoreAutomation
 
 logging.basicConfig(level=logging.INFO)
 

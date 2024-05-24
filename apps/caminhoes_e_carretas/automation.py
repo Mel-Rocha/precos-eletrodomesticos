@@ -9,7 +9,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from automation.core_automation.base_automation import CoreAutomation
+from apps.core.base_automation import CoreAutomation
 
 logging.basicConfig(level=logging.INFO)
 

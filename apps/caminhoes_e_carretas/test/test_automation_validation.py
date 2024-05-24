@@ -1,6 +1,6 @@
 import unittest
 
-from automation.caminhoes_e_carretas.collect_url import CaminhoesECarretasAutomation
+from apps.caminhoes_e_carretas.automation import CaminhoesECarretasAutomation
 
 
 class TestCaminhoesECarretasAutomation(unittest.TestCase):

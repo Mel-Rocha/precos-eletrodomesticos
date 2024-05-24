@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-from automation.caminhoes_e_carretas.collect_url import CaminhoesECarretasAutomation
+from apps.caminhoes_e_carretas.automation import CaminhoesECarretasAutomation
 
 
 class TestBackhoeUrlAll(unittest.TestCase):
