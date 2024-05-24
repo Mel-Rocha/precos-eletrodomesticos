@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from starlette.responses import StreamingResponse
 
 from apps.caminhoes_e_carretas.extract import BackhoeExtract
-from apps.caminhoes_e_carretas.db_manager import save_to_database
+from apps.caminhoes_e_carretas.db_manager import DatabaseManager
 from apps.caminhoes_e_carretas.automation import CaminhoesECarretasAutomation
 
 logging.basicConfig(level=logging.INFO)
@@ -28,6 +28,11 @@ async def backhoe():
     logging.info(f"Falha na extração: {extract_failure_analysis}")
     logging.info(f"Quantidade de Anúncios sem Preço: {len(not_price)}  URLs Correspondentes: {not_price}")
 
-    await save_to_database(data)
+    new_records_count = await DatabaseManager.save_data_and_get_new_record_count(data)
+    records_with_null_model_code = await DatabaseManager.count_records_with_null_model_code()
 
-    return {"message": "Data saved to database successfully"}
+    return {
+        "message": "Data saved to database successfully",
+        "new_records_count": new_records_count,
+        "records_with_null_model_code": records_with_null_model_code
+    }
