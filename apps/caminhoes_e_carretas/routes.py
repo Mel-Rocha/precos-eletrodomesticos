@@ -5,8 +5,8 @@ from fastapi import APIRouter
 from starlette.responses import StreamingResponse
 
 from apps.caminhoes_e_carretas.extract import BackhoeExtract
+from apps.caminhoes_e_carretas.db_manager import save_to_database
 from apps.caminhoes_e_carretas.automation import CaminhoesECarretasAutomation
-from apps.caminhoes_e_carretas.excel_generator import ExcelGenerator
 
 logging.basicConfig(level=logging.INFO)
 
@@ -28,5 +28,6 @@ async def backhoe():
     logging.info(f"Falha na extração: {extract_failure_analysis}")
     logging.info(f"Quantidade de Anúncios sem Preço: {len(not_price)}  URLs Correspondentes: {not_price}")
 
-    excel_generator = ExcelGenerator()
-    return excel_generator.generate(data)
+    await save_to_database(data)
+
+    return {"message": "Data saved to database successfully"}
