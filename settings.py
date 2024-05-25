@@ -13,7 +13,7 @@ TORTOISE_ORM = {
     },
     "apps": {
         "models": {
-            "models": ["apps.caminhoes_e_carretas.models", "aerich.models"],
+            "models": ["apps.core.models", "aerich.models"],
             "default_connection": "default",
         }
     },

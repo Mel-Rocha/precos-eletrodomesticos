@@ -7,9 +7,8 @@ def custom_openapi(app):
 
     openapi_schema = get_openapi(
         title="API Crawler Máquinas Rodoviárias",
-        version="1.0.0",
-        description="This is project documentation for extracting information from road machines and generating .xlsx "
-                    "files.",
+        version="2.0.0",
+        description="This is project documentation for extracting information from road machines",
         routes=app.routes,
     )
 

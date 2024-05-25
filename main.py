@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from tortoise.contrib.fastapi import register_tortoise
 
+from apps.core import routes as core_router
 from apps.docs import routes as docs_router
 from apps.auth.middlewares import AuthMiddleware
 from apps.docs.custom_openai import custom_openapi
@@ -17,7 +18,7 @@ def init_db(instance: FastAPI) -> None:
     register_tortoise(
         instance,
         db_url=os.getenv("DATABASE_URL"),
-        modules={"models": ["apps.caminhoes_e_carretas.models"]},
+        modules={"models": ["apps.core.models"]},
         generate_schemas=True,
         add_exception_handlers=True,
     )
@@ -42,9 +43,11 @@ def create_application() -> FastAPI:
         allow_headers=["*"]
     )
 
-    application.include_router(docs_router.router, tags=['caminhoes_e_carretas'])
+    application.include_router(docs_router.router, tags=['caminhoes_e_carretas', 'core'])
     application.include_router(caminhoes_e_carretas_router.router, prefix="/caminhoes_e_carretas",
                                tags=['caminhoes_e_carretas'])
+    application.include_router(core_router.router, prefix="/core",
+                               tags=['core'])
 
     return application
 
