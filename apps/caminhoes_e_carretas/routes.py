@@ -33,16 +33,16 @@ async def backhoe():
 
         if new_records_count > 0:
             return JSONResponse(status_code=201, content={
-                "message": "Data saved to database successfully",
-                "new_records_count": new_records_count,
-                "records_with_null_model_code": records_with_null_model_code
+                "message": "Dados cadastrados com sucesso",
+                "Quantidade de novos registros": new_records_count,
+                "Quantidade total de registros sem correlação com Cód. Modelo": records_with_null_model_code
             })
         else:
             return JSONResponse(status_code=200, content={
-                "message": "Data saved to database successfully",
-                "new_records_count": new_records_count,
-                "records_with_null_model_code": records_with_null_model_code
+                "message": "Nenhum novo dado foi cadastrado",
+                "Quantidade de novos registros": new_records_count,
+                "Quantidade total de registros sem correlação com Cód. Modelo": records_with_null_model_code
             })
     except Exception as e:
-        logging.error(f"An error occurred: {str(e)}")
-        raise HTTPException(status_code=500, detail="An error occurred while processing the request.")
+        logging.error(f"Erro: {str(e)}")
+        raise HTTPException(status_code=500, detail="Ocorreu um erro, falha no processo.")
