@@ -9,25 +9,28 @@ from openpyxl.worksheet.table import Table, TableStyleInfo
 
 
 class ExcelGenerator:
-    def generate(self, data):
+    @staticmethod
+    def generate(data):
         df = pd.DataFrame(data)
 
-        df['crawling_date'] = pd.to_datetime(df['crawling_date'])
-        df.sort_values(by='crawling_date', ascending=False, inplace=True)
-
-        df.drop_duplicates(subset='url', keep='first', inplace=True)
+        df['crawl_date'] = pd.to_datetime(df['crawl_date']).dt.strftime('%Y-%m-%d %H:%M:%S%z')
+        df.sort_values(by='crawl_date', ascending=False, inplace=True)
 
         df.rename(columns={
             'fabricator': 'Fabricante',
             'model': 'Modelo',
-            'year': 'Ano',
+            'year_fabrication': 'Ano',
             'price': 'Preço',
             'worked_hours': 'Horas',
             'url': 'URL',
-            'crawling_date': 'Data da Busca'
+            'crawl_date': 'Data da Busca',
+            'state': 'Estado',
+            'date_of_posting': 'Data da Postagem',
+            'length': 'Comprimento',
+            'volume': 'Volume',
+            'pallets': 'Pallets',
+            'model_code': 'Cód. Modelo'
         }, inplace=True)
-
-        df['Cód. Modelo'] = ''
 
         buffer = BytesIO()
 

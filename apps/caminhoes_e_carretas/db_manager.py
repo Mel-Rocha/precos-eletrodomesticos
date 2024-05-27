@@ -45,3 +45,8 @@ class DatabaseManager:
     async def count_records_with_null_model_code():
         records_with_null_model_code = await BackhoeTable.filter(model_code=None).count()
         return records_with_null_model_code
+
+    @staticmethod
+    async def get_all_data():
+        backhoes = await BackhoeTable.all().values()
+        return backhoes

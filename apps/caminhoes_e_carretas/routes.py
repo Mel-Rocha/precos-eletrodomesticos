@@ -7,6 +7,7 @@ from starlette.responses import StreamingResponse
 
 from apps.caminhoes_e_carretas.extract import BackhoeExtract
 from apps.caminhoes_e_carretas.db_manager import DatabaseManager
+from apps.caminhoes_e_carretas.excel_generator import ExcelGenerator
 from apps.caminhoes_e_carretas.automation import CaminhoesECarretasAutomation
 
 logging.basicConfig(level=logging.INFO)
@@ -14,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 router = APIRouter()
 
 
-@router.get("/crawler/backhoe/", response_class=StreamingResponse)
+@router.get("/crawler/backhoe/")
 async def backhoe():
     try:
         collect_urls = CaminhoesECarretasAutomation()
@@ -43,6 +44,18 @@ async def backhoe():
                 "Quantidade de novos registros": new_records_count,
                 "Quantidade total de registros sem correlação com Cód. Modelo": records_with_null_model_code
             })
+    except Exception as e:
+        logging.error(f"Erro: {str(e)}")
+        raise HTTPException(status_code=500, detail="Ocorreu um erro, falha no processo.")
+
+
+@router.get("/consolidated/backhoe/excel/", response_class=StreamingResponse)
+async def backhoe_excel():
+    try:
+        data = await DatabaseManager.get_all_data()
+        excel_generator = ExcelGenerator()
+        response = excel_generator.generate(data)
+        return response
     except Exception as e:
         logging.error(f"Erro: {str(e)}")
         raise HTTPException(status_code=500, detail="Ocorreu um erro, falha no processo.")
