@@ -1,3 +1,5 @@
+from pytz import timezone
+
 from apps.core.models import BackhoeTable
 
 
@@ -45,4 +47,6 @@ class DatabaseManager:
     @staticmethod
     async def get_all_data():
         backhoes = await BackhoeTable.all().values()
+        for backhoe in backhoes:
+            backhoe['crawl_date'] = backhoe['crawl_date'].astimezone(timezone('America/Sao_Paulo')).replace(tzinfo=None)
         return backhoes
