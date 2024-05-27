@@ -12,7 +12,7 @@ class DatabaseManager:
         for item in data:
             existing_backhoe = await BackhoeTable.filter(url=item['url']).first()
             if existing_backhoe:
-                if existing_backhoe.price != float(item['price']):
+                if existing_backhoe.price != (item['price']):
                     await DatabaseManager.create_new_backhoe(item)
             else:
                 await DatabaseManager.create_new_backhoe(item)
@@ -24,7 +24,7 @@ class DatabaseManager:
             fabricator=item['fabricator'],
             model=item['model'],
             url=item['url'],
-            price=float(item['price']),
+            price=(item['price']),
             worked_hours=(item['worked_hours']),
             year_fabrication=(item['year']),
         )
