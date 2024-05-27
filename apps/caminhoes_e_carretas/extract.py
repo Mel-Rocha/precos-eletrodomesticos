@@ -60,7 +60,12 @@ class BackhoeExtract(CoreAutomation):
         price_element = self.soup.select_one('p:contains("Preço") > strong')
         if price_element is None:
             self.fail_backhoe[self.current_url].append('price_element')
-        return price_element.text.strip() if price_element else None
+            return None
+        price = price_element.text.strip()
+        if not re.search(r'\d', price):
+            return None
+        price = price.replace('R$ ', '').replace('.', '').replace(',', '.')
+        return price
 
     def worked_hours_extract(self):
         worked_hours_element = self.soup.select_one('p:contains("Horas") > strong')
@@ -83,7 +88,7 @@ class BackhoeExtract(CoreAutomation):
             self.current_url = url
             self.fetch_page(url)
             price = self.price_extract()
-            if price is None or not re.search(r'\d', price):
+            if price is None:
                 not_price.append(url)
                 continue
             backhoe = {
