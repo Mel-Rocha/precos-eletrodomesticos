@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 router = APIRouter()
 
 
-@router.get("/crawler/backhoe/", response_class=StreamingResponse)
+@router.get("/crawler/backhoe/")
 async def backhoe():
     try:
         collect_urls = CaminhoesECarretasAutomation()

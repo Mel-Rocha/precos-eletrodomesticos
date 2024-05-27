@@ -13,13 +13,13 @@ class ExcelGenerator:
     def generate(data):
         df = pd.DataFrame(data)
 
-        df['crawl_date'] = pd.to_datetime(df['crawl_date']).dt.tz_localize(None)
+        df['crawl_date'] = pd.to_datetime(df['crawl_date']).dt.strftime('%Y-%m-%d %H:%M:%S%z')
         df.sort_values(by='crawl_date', ascending=False, inplace=True)
 
         df.rename(columns={
             'fabricator': 'Fabricante',
             'model': 'Modelo',
-            'year': 'Ano',
+            'year_fabrication': 'Ano',
             'price': 'Preço',
             'worked_hours': 'Horas',
             'url': 'URL',
