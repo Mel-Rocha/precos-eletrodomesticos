@@ -25,8 +25,8 @@ class DatabaseManager:
             model=item['model'],
             url=item['url'],
             price=float(item['price']),
-            worked_hours=float(item['worked_hours']) if item['worked_hours'] is not None else None,
-            year_fabrication=int(item['year']) if item['year'] is not None else None,
+            worked_hours=(item['worked_hours']),
+            year_fabrication=(item['year']),
         )
         await backhoe.save()
 
