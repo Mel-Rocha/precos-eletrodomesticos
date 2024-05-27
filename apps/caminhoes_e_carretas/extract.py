@@ -54,19 +54,37 @@ class BackhoeExtract(CoreAutomation):
         year_element = self.soup.select_one('p:contains("Ano") > strong')
         if year_element is None:
             self.fail_backhoe[self.current_url].append('year_element')
-        return year_element.text.strip() if year_element else None
+            return None
+        year = year_element.text.strip()
+        year_digits = "".join(re.findall(r'\d', year))
+        if not year_digits:
+            self.fail_backhoe[self.current_url].append('worked_hours_element')
+            return None
+        return int(year_digits)
 
     def price_extract(self):
         price_element = self.soup.select_one('p:contains("Preço") > strong')
         if price_element is None:
             self.fail_backhoe[self.current_url].append('price_element')
-        return price_element.text.strip() if price_element else None
+            return None
+        price = price_element.text.strip()
+        price_digits = "".join(re.findall(r'\d', price))
+        if not price_digits:
+            self.fail_backhoe[self.current_url].append('price_element')
+            return None
+        return int(price_digits)
 
     def worked_hours_extract(self):
         worked_hours_element = self.soup.select_one('p:contains("Horas") > strong')
         if worked_hours_element is None:
             self.fail_backhoe[self.current_url].append('worked_hours_element')
-        return worked_hours_element.text.strip() if worked_hours_element else None
+            return None
+        worked_hours = worked_hours_element.text.strip()
+        worked_hours_digits = "".join(re.findall(r'\d', worked_hours))
+        if not worked_hours_digits:
+            self.fail_backhoe[self.current_url].append('worked_hours_element')
+            return None
+        return int(worked_hours_digits)
 
     def url_extract(self):
         return self.current_url
@@ -83,7 +101,7 @@ class BackhoeExtract(CoreAutomation):
             self.current_url = url
             self.fetch_page(url)
             price = self.price_extract()
-            if price is None or not re.search(r'\d', price):
+            if price is None:
                 not_price.append(url)
                 continue
             backhoe = {
@@ -114,7 +132,9 @@ if __name__ == "__main__":
         "https://www.caminhoesecarretas.com.br/veiculo/maravilha/sc/retro-escavadeira/jcb/4cx11/2009/tracao-4x4/cabi"
         "ne-fechada/patrolao-maquinas/1181766",
         "https://www.caminhoesecarretas.com.br/veiculo/aruja/sp/retro-escavadeira/new-holland/b95b/2012/tracao-4x4/c"
-        "abine-fechada/cattrucks/1118497"
+        "abine-fechada/cattrucks/1118497",
+        "https://www.caminhoesecarretas.com.br/veiculo/catanduva/sp/retro-escavadeira/jcb/4cx11/2021/tracao-4x4/cabine-"
+        "fechada/manoel-tratores/1170789"
     ]
     e = BackhoeExtract(urls)
     extract = e.extract()
