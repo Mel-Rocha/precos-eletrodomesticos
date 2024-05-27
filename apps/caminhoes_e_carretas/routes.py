@@ -53,6 +53,12 @@ async def backhoe():
 async def backhoe_excel():
     try:
         data = await DatabaseManager.get_all_data()
+        if not data:
+            return JSONResponse(status_code=400, content={
+                "message": "O banco não possui nenhum registro, portanto não é possível gerar o excel. Execute a "
+                           "automação préviamente."
+            })
+
         excel_generator = ExcelGenerator()
         response = excel_generator.generate(data)
         return response
