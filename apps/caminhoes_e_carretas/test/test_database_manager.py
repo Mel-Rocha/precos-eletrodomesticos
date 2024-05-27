@@ -1,6 +1,7 @@
 import os
 import asyncio
 import unittest
+from decimal import Decimal
 
 from tortoise import Tortoise
 from dotenv import load_dotenv
@@ -55,6 +56,29 @@ class TestDatabaseManager(unittest.TestCase):
                 with self.subTest(item=item):
                     saved_item = self.loop.run_until_complete(BackhoeTable.filter(url=item['url']).first())
                     self.assertIsNotNone(saved_item, "Item was not saved to the database")
+
+    def test_create_new_backhoe(self):
+        item = {
+            'fabricator': 'NEW HOLLAND',
+            'model': 'B95B',
+            'year': '2011',
+            'price': 'R$ 240.000,00',
+            'worked_hours': None,
+            'url': 'https://www.caminhoesecarretas.com.br/veiculo/aruja/sp/retro-escavadeira/new-holland/b95b/2012'
+                   '/tracao-4x4/cabine-fechada/cattrucks/1118497',
+            'crawling_date': '2024-05-24 13:42:21'
+        }
+        self.loop.run_until_complete(self.db_manager.create_new_backhoe(item))
+        saved_item = self.loop.run_until_complete(BackhoeTable.filter(url=item['url']).first())
+        self.assertIsNotNone(saved_item, "Item was not saved to the database")
+        self.assertEqual(saved_item.fabricator, item['fabricator'])
+        self.assertEqual(saved_item.model, item['model'])
+        self.assertEqual(saved_item.year_fabrication, int(item['year']) if item['year'] is not None else None)
+        price = Decimal(item['price'].replace('R$ ', '').replace('.', '').replace(',', '.'))
+        self.assertEqual(saved_item.price, price)
+        self.assertEqual(saved_item.worked_hours,
+                         float(item['worked_hours']) if item['worked_hours'] is not None else None)
+        self.assertEqual(saved_item.url, item['url'])
 
 
 if __name__ == '__main__':
