@@ -68,10 +68,11 @@ class BackhoeExtract(CoreAutomation):
             self.fail_backhoe[self.current_url].append('price_element')
             return None
         price = price_element.text.strip()
-        if not re.search(r'\d', price):
+        price_digits = "".join(re.findall(r'\d', price))
+        if not price_digits:
+            self.fail_backhoe[self.current_url].append('price_element')
             return None
-        price = price.replace('R$ ', '').replace('.', '').replace(',', '.')
-        return price
+        return float(price_digits)
 
     def worked_hours_extract(self):
         worked_hours_element = self.soup.select_one('p:contains("Horas") > strong')
