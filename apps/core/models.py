@@ -5,8 +5,8 @@ from tortoise import fields, Model
 
 class CoreTable(Model):
     id = fields.UUIDField(pk=True, default=uuid.uuid4)
-    price = fields.BigIntField()
-    url = fields.CharField(max_length=255)
+    price = fields.BigIntField(index=True)
+    url = fields.CharField(max_length=255, index=True)
     crawl_date = fields.DatetimeField(auto_now=True)
     fabricator = fields.CharField(max_length=255, null=True)
     model = fields.CharField(max_length=255, null=True)

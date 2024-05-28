@@ -1,4 +1,5 @@
 from pytz import timezone
+from tortoise.transactions import in_transaction
 
 from apps.core.models import BackhoeTable
 
@@ -11,26 +12,30 @@ class DatabaseManager:
 
     @staticmethod
     async def save_to_database(data):
-        for item in data:
-            existing_backhoe = await BackhoeTable.filter(url=item['url']).first()
-            if existing_backhoe:
-                if existing_backhoe.price != (item['price']):
-                    await DatabaseManager.create_new_backhoe(item)
-            else:
-                await DatabaseManager.create_new_backhoe(item)
+        async with in_transaction() as connection:
+            items_to_create = []
+            for item in data:
+                existing_backhoe = await BackhoeTable.filter(url=item['url']).using_db(connection).first()
+                if existing_backhoe:
+                    if existing_backhoe.price != item['price']:
+                        items_to_create.append(DatabaseManager.create_new_backhoe_instance(item))
+                else:
+                    items_to_create.append(DatabaseManager.create_new_backhoe_instance(item))
+
+            if items_to_create:
+                await BackhoeTable.bulk_create(items_to_create, using_db=connection)
 
     @staticmethod
-    async def create_new_backhoe(item):
-        backhoe = BackhoeTable(
+    def create_new_backhoe_instance(item):
+        return BackhoeTable(
             crawl_date=item['crawling_date'],
             fabricator=item['fabricator'],
             model=item['model'],
             url=item['url'],
-            price=(item['price']),
-            worked_hours=(item['worked_hours']),
-            year_fabrication=(item['year']),
+            price=item['price'],
+            worked_hours=item['worked_hours'],
+            year_fabrication=item['year'],
         )
-        await backhoe.save()
 
     @staticmethod
     async def save_data_and_get_new_record_count(data):
