@@ -6,9 +6,9 @@ from apps.caminhoes_e_carretas.automation import CaminhoesECarretasAutomation
 
 class TestBackhoeUrlAll(unittest.TestCase):
 
-    @patch('automation.caminhoes_e_carretas.collect_url.BeautifulSoup')
-    @patch('automation.caminhoes_e_carretas.collect_url.WebDriverWait')
-    @patch('automation.caminhoes_e_carretas.collect_url.time.sleep', return_value=None)
+    @patch('apps.caminhoes_e_carretas.automation.BeautifulSoup')
+    @patch('apps.caminhoes_e_carretas.automation.WebDriverWait')
+    @patch('apps.caminhoes_e_carretas.automation.time.sleep', return_value=None)
     def test_backhoe_url_all(self, mock_sleep, mock_webdriverwait, mock_beautifulsoup):
         mock_driver = MagicMock()
         mock_driver.page_source = '<html></html>'
