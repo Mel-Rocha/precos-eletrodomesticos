@@ -35,6 +35,7 @@ class DatabaseManager:
             price=item['price'],
             worked_hours=item['worked_hours'],
             year_fabrication=item['year'],
+            description=item['description'],
         )
 
     @staticmethod
