@@ -36,7 +36,7 @@ class TestDatabaseManager(unittest.TestCase):
             'fabricator': 'NEW HOLLAND',
             'model': 'B95B',
             'year': '2011',
-            'price': 'R$ 240.000,00',
+            'price': 24000000,
             'worked_hours': None,
             'url': 'https://www.caminhoesecarretas.com.br/veiculo/aruja/sp/retro-escavadeira/new-holland/b95b/2012/tracao-4x4/cabine-fechada/cattrucks/1118497',
             'crawling_date': '2024-05-24 13:42:21'
@@ -48,7 +48,7 @@ class TestDatabaseManager(unittest.TestCase):
 
         # Caso de teste 2: URL existente com o mesmo preço
         item_same_price = item.copy()
-        item_same_price['price'] = 'R$ 240.000,00'  # Mesmo preço
+        item_same_price['price'] = 24000000  # Mesmo preço
         item_same_price['crawling_date'] = '2024-05-25 13:42:22'  # Data de rastreamento mais recente
         with self.subTest(case='URL existente com o mesmo preço'):
             initial_count = self.loop.run_until_complete(BackhoeTable.all().count())
@@ -58,7 +58,7 @@ class TestDatabaseManager(unittest.TestCase):
 
         # Caso de teste 3: URL existente com preço diferente
         item_different_price = item.copy()
-        item_different_price['price'] = 'R$ 250.000,00'
+        item_different_price['price'] = 24000001
         with self.subTest(case='URL existente com preço diferente'):
             initial_count = self.loop.run_until_complete(BackhoeTable.all().count())
             self.loop.run_until_complete(self.db_manager.save_to_database([item_different_price]))
