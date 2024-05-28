@@ -31,35 +31,36 @@ class TestDatabaseManager(unittest.TestCase):
         cls.loop.close()
 
     def test_save_to_database(self):
-        # Caso de teste 1: URL inédita
+        # Test Case 1: URL unprecedented
         item = {
             'fabricator': 'NEW HOLLAND',
             'model': 'B95B',
             'year': '2011',
             'price': 24000000,
             'worked_hours': None,
-            'url': 'https://www.caminhoesecarretas.com.br/veiculo/aruja/sp/retro-escavadeira/new-holland/b95b/2012/tracao-4x4/cabine-fechada/cattrucks/1118497',
+            'url': 'https://www.caminhoesecarretas.com.br/veiculo/aruja/sp/retro-escavadeira/new-holland/b95b/2012'
+                   '/tracao-4x4/cabine-fechada/cattrucks/1118497',
             'crawling_date': '2024-05-24 13:42:21'
         }
-        with self.subTest(case='URL inédita'):
+        with self.subTest(case='URL unprecedented'):
             self.loop.run_until_complete(self.db_manager.save_to_database([item]))
             saved_item = self.loop.run_until_complete(BackhoeTable.filter(url=item['url']).first())
-            self.assertIsNotNone(saved_item, "Item was not saved to the database")
+            self.assertIsNotNone(saved_item, "A new item should not have been created")
 
-        # Caso de teste 2: URL existente com o mesmo preço
+        # Test Case 2: Existing URL with the same price
         item_same_price = item.copy()
-        item_same_price['price'] = 24000000  # Mesmo preço
-        item_same_price['crawling_date'] = '2024-05-25 13:42:22'  # Data de rastreamento mais recente
-        with self.subTest(case='URL existente com o mesmo preço'):
+        item_same_price['price'] = 24000000  # Same price
+        item_same_price['crawling_date'] = '2024-05-25 13:42:22'  # Most recent crawling date
+        with self.subTest(case='Existing URL with the same price'):
             initial_count = self.loop.run_until_complete(BackhoeTable.all().count())
             self.loop.run_until_complete(self.db_manager.save_to_database([item_same_price]))
             final_count = self.loop.run_until_complete(BackhoeTable.all().count())
-            self.assertEqual(initial_count, final_count, "A new item should not have been created")
+            self.assertEqual(initial_count, final_count, "The new item was not created")
 
-        # Caso de teste 3: URL existente com preço diferente
+        # Test Case 3: Existing URL with different price
         item_different_price = item.copy()
-        item_different_price['price'] = 24000001
-        with self.subTest(case='URL existente com preço diferente'):
+        item_different_price['price'] = 24000001  # Different price
+        with self.subTest(case='Existing URL with different price'):
             initial_count = self.loop.run_until_complete(BackhoeTable.all().count())
             self.loop.run_until_complete(self.db_manager.save_to_database([item_different_price]))
             final_count = self.loop.run_until_complete(BackhoeTable.all().count())
