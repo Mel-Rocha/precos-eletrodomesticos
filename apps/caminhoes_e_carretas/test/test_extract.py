@@ -19,22 +19,21 @@ class TestBackhoeExtract(unittest.TestCase):
         mock_soup = MagicMock()
         self.extractor.soup = mock_soup
         self.extractor.current_url = self.urls[0]
-
         self.extractor.fail_backhoe[self.extractor.current_url] = []
 
-        mock_soup.select_one.return_value = MagicMock(text='R$ 10000')
-        result = self.extractor.price_extract()
-        self.assertEqual(result, 10000)
+        test_cases = [
+            ('R$ 10000,00', 1000000),  # string and digits
+            ('R$ 10000,00 @ Test', 1000000),  # price and other special characters
+            ('(Á consultar)', None)  # string without digits
+        ]
 
-        mock_soup.select_one.return_value = None
-        result = self.extractor.price_extract()
-        self.assertEqual(result, None)
-        self.assertIn('price_element', self.extractor.fail_backhoe[self.extractor.current_url])
-
-        mock_soup.select_one.return_value = MagicMock(text='R$ ')
-        result = self.extractor.price_extract()
-        self.assertEqual(result, None)
-        self.assertIn('price_element', self.extractor.fail_backhoe[self.extractor.current_url])
+        for text, expected in test_cases:
+            with self.subTest(text=text):
+                mock_soup.select_one.return_value = MagicMock(text=text)
+                result = self.extractor.price_extract()
+                self.assertEqual(result, expected)
+                if expected is None:
+                    self.assertIn('price_element', self.extractor.fail_backhoe[self.extractor.current_url])
 
 
 if __name__ == '__main__':
