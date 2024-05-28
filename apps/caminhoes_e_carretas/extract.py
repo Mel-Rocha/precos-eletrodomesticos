@@ -3,7 +3,6 @@ import logging
 from datetime import datetime
 
 from bs4 import BeautifulSoup
-from selenium.webdriver.common.by import By
 from tenacity import retry, stop_after_attempt
 
 from apps.core.base_automation import CoreAutomation
@@ -35,8 +34,23 @@ class BackhoeExtract(CoreAutomation):
         self.driver.get(url)
         html_content = self.driver.page_source
         self.soup = BeautifulSoup(html_content, 'html.parser')
-        self.div_information = self.driver.find_element(By.XPATH, '//*[@id="tab1"]/div/div/div[1]')
         self.fail_backhoe = {url: []}
+
+    def clean_data(self, data):
+        data = data.replace('\n', ' ').replace('\xa0', ' ').strip()
+        cleaned_data = ' '.join(data.split())
+        return cleaned_data
+
+    def description_extract(self):
+        description_element = self.soup.select_one('div.col-lg-4.col-md-4.col-sm-12.col-12')
+        if description_element is None:
+            self.fail_backhoe[self.current_url].append('description_extract')
+            return None
+        description = description_element.text
+        cleaned_description = self.clean_data(description)
+        if len(cleaned_description) >= 550:
+            cleaned_description = cleaned_description[:550]
+        return cleaned_description
 
     def fabricator_extract(self):
         fabricator_element = self.soup.select_one('p:contains("Marca") > strong')
@@ -110,6 +124,7 @@ class BackhoeExtract(CoreAutomation):
                 'year': self.year_extract(),
                 'price': price,
                 'worked_hours': self.worked_hours_extract(),
+                'description': self.description_extract(),
                 'url': self.url_extract(),
                 'crawling_date': BackhoeExtract.crawling_date_extract(),
             }

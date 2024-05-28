@@ -29,6 +29,7 @@ class ExcelGenerator:
             'length': 'Comprimento',
             'volume': 'Volume',
             'pallets': 'Pallets',
+            'description': 'Descrição',
             'model_code': 'Cód. Modelo'
         }, inplace=True)
 

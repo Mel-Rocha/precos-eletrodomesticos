@@ -38,6 +38,7 @@ class TestDatabaseManager(unittest.TestCase):
             'year': '2011',
             'price': 24000000,
             'worked_hours': None,
+            'description': 'NEW HOLLAND B95B 2011/2012 AMARELO test description',
             'url': 'https://www.caminhoesecarretas.com.br/veiculo/aruja/sp/retro-escavadeira/new-holland/b95b/2012'
                    '/tracao-4x4/cabine-fechada/cattrucks/1118497',
             'crawling_date': '2024-05-24 13:42:21'

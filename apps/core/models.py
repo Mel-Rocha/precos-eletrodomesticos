@@ -8,6 +8,7 @@ class CoreTable(Model):
     price = fields.BigIntField(index=True)
     url = fields.CharField(max_length=255, index=True)
     crawl_date = fields.DatetimeField(auto_now=True)
+    description = fields.CharField(max_length=600, null=True)
     fabricator = fields.CharField(max_length=255, null=True)
     model = fields.CharField(max_length=255, null=True)
     year_fabrication = fields.IntField(null=True)
