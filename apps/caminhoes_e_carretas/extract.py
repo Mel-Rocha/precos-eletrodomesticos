@@ -49,8 +49,8 @@ class BackhoeExtract(CoreAutomation):
             return None
         description = description_element.text
         cleaned_description = self.clean_data(description)
-        if len(cleaned_description) >= 485:
-            cleaned_description = cleaned_description[:485]
+        if len(cleaned_description) >= 550:
+            cleaned_description = cleaned_description[:550]
         return cleaned_description
 
     def fabricator_extract(self):
