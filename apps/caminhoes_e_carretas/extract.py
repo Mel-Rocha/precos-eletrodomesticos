@@ -3,7 +3,6 @@ import logging
 from datetime import datetime
 
 from bs4 import BeautifulSoup
-from selenium.webdriver.common.by import By
 from tenacity import retry, stop_after_attempt
 
 from apps.core.base_automation import CoreAutomation
