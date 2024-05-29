@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
+from selenium.common import NoSuchElementException
+
 from apps.caminhoes_e_carretas.extract import BackhoeExtract
 
 
@@ -33,7 +35,33 @@ class TestBackhoeExtract(unittest.TestCase):
                 result = self.extractor.price_extract()
                 self.assertEqual(result, expected)
                 if expected is None:
-                    self.assertIn('price_element', self.extractor.fail_backhoe[self.extractor.current_url])
+                    self.assertIn('price_extract', self.extractor.fail_backhoe[self.extractor.current_url])
+
+    def test_description_extract(self):
+        mock_driver = MagicMock()
+        self.extractor.driver = mock_driver
+        self.extractor.current_url = self.urls[0]
+        self.extractor.fail_backhoe[self.extractor.current_url] = []
+
+        test_cases = [
+            ('a' * 100,  'a' * 100),  # Description less than 550 characters
+            ('a' * 600,  'a' * 550), # Description more than 550 characters
+            ('', None),  # No description
+            (NoSuchElementException(), None)  # Exception thrown
+        ]
+
+        for text, expected in test_cases:
+            with self.subTest(text=text):
+                if isinstance(text, Exception):
+                    mock_driver.find_element.side_effect = text
+                else:
+                    mock_element = MagicMock()
+                    mock_element.text = text
+                    mock_driver.find_element.return_value = mock_element
+                result = self.extractor.description_extract()
+                self.assertEqual(result, expected)
+                if expected is None:
+                    self.assertIn('description_extract', self.extractor.fail_backhoe[self.extractor.current_url])
 
 
 if __name__ == '__main__':
