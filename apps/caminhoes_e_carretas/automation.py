@@ -21,8 +21,8 @@ class CaminhoesECarretasAutomation(CoreAutomation):
     Retorno: tupla contendo:
         1 - current_url_all: Lista com todas URLs correspondente a cada anúncio.
         2 - metrics: Lista de dicionários contendo dados de monitoramento da extração.
-        3 - automation_failure_analysis: lista de dicionários contendo a URL específica e o metódo específico onde a
-        falha ocorreu.
+        3 - automation_failure_analysis: lista de dicionários contendo o xpath específico onde não foi possível obter
+        a URL.
     """
 
     def __init__(self):
@@ -104,7 +104,7 @@ class CaminhoesECarretasAutomation(CoreAutomation):
                         time.sleep(2)
 
                 metrics = self.automation_validation(page_number, num_div_elements, current_url_all,
-                                                             self.old_len)
+                                                     self.old_len)
                 self.metrics.append(metrics)
 
                 page_number += 1
