@@ -3,7 +3,9 @@ import logging
 from datetime import datetime
 
 from bs4 import BeautifulSoup
+from selenium.webdriver.common.by import By
 from tenacity import retry, stop_after_attempt
+from selenium.common import NoSuchElementException
 
 from apps.core.base_automation import CoreAutomation
 
@@ -42,11 +44,15 @@ class BackhoeExtract(CoreAutomation):
         return cleaned_data
 
     def description_extract(self):
-        description_element = self.soup.select_one('div.col-lg-4.col-md-4.col-sm-12.col-12')
-        if description_element is None:
+        try:
+            description_element = self.driver.find_element(By.XPATH, '//*[@id="tab1"]/div/div/div[3]')
+        except NoSuchElementException:
             self.fail_backhoe[self.current_url].append('description_extract')
             return None
-        description = description_element.text
+        description = description_element.text.replace("Descrição do Veículo", "").strip()
+        if not description:
+            self.fail_backhoe[self.current_url].append('description_extract')
+            return None
         cleaned_description = self.clean_data(description)
         if len(cleaned_description) >= 550:
             cleaned_description = cleaned_description[:550]
@@ -61,42 +67,42 @@ class BackhoeExtract(CoreAutomation):
     def model_extract(self):
         model_element = self.soup.select_one('p:contains("Modelo") > strong')
         if model_element is None:
-            self.fail_backhoe[self.current_url].append('model_element')
+            self.fail_backhoe[self.current_url].append('model_extract')
         return model_element.text.strip() if model_element else None
 
     def year_extract(self):
         year_element = self.soup.select_one('p:contains("Ano") > strong')
         if year_element is None:
-            self.fail_backhoe[self.current_url].append('year_element')
+            self.fail_backhoe[self.current_url].append('year_extract')
             return None
         year = year_element.text.strip()
         year_digits = "".join(re.findall(r'\d', year))
         if not year_digits:
-            self.fail_backhoe[self.current_url].append('worked_hours_element')
+            self.fail_backhoe[self.current_url].append('year_extract')
             return None
         return int(year_digits)
 
     def price_extract(self):
         price_element = self.soup.select_one('p:contains("Preço") > strong')
         if price_element is None:
-            self.fail_backhoe[self.current_url].append('price_element')
+            self.fail_backhoe[self.current_url].append('price_extract')
             return None
         price = price_element.text.strip()
         price_digits = "".join(re.findall(r'\d', price))
         if not price_digits:
-            self.fail_backhoe[self.current_url].append('price_element')
+            self.fail_backhoe[self.current_url].append('price_extract')
             return None
         return int(price_digits)
 
     def worked_hours_extract(self):
         worked_hours_element = self.soup.select_one('p:contains("Horas") > strong')
         if worked_hours_element is None:
-            self.fail_backhoe[self.current_url].append('worked_hours_element')
+            self.fail_backhoe[self.current_url].append('worked_hours_extract')
             return None
         worked_hours = worked_hours_element.text.strip()
         worked_hours_digits = "".join(re.findall(r'\d', worked_hours))
         if not worked_hours_digits:
-            self.fail_backhoe[self.current_url].append('worked_hours_element')
+            self.fail_backhoe[self.current_url].append('worked_hours_extract')
             return None
         return int(worked_hours_digits)
 

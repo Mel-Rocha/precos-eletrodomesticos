@@ -9,6 +9,13 @@ from openpyxl.worksheet.table import Table, TableStyleInfo
 
 
 class ExcelGenerator:
+
+    @staticmethod
+    def remove_illegal_chars(text):
+        if isinstance(text, str):
+            return ''.join(char for char in text if ord(char) >= 32)
+        return text
+
     @staticmethod
     def generate(data):
         df = pd.DataFrame(data)
@@ -32,6 +39,8 @@ class ExcelGenerator:
             'description': 'Descrição',
             'model_code': 'Cód. Modelo'
         }, inplace=True)
+
+        df = df.applymap(ExcelGenerator.remove_illegal_chars)
 
         buffer = BytesIO()
 
