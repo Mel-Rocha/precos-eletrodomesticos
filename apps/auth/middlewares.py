@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import os
 
 from dotenv import load_dotenv
@@ -36,4 +37,44 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 }
             )
         response = await call_next(request)
+=======
+import os
+
+from dotenv import load_dotenv
+from fastapi import Request, status
+from starlette.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
+
+load_dotenv()
+
+
+AUTH_TOKEN = os.getenv("AUTH_TOKEN")
+
+
+class AuthMiddleware(BaseHTTPMiddleware):
+    """
+    Middleware for application access authorization.
+
+    Mandatory to provide:
+
+
+    @token_fixo: string (Fixed token) (provide in header)
+    """
+
+    async def dispatch(self, request: Request, call_next):
+        token = request.headers.get("Authorization", "").replace("Bearer ", "")
+
+        if request.url.path in ["/docs", "/openapi.json"]:
+            response = await call_next(request)
+            return response
+
+        if token != AUTH_TOKEN:
+            return JSONResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                content={
+                    "detail": "Token inválido. Necessário autenticação com Bearer Token",
+                }
+            )
+        response = await call_next(request)
+>>>>>>> b9c9b7ce59051f80f8dd40d88d8dc081e9a64c07
         return response
