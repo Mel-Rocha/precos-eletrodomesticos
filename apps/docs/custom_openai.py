@@ -6,9 +6,9 @@ def custom_openapi(app):
         return app.openapi_schema
 
     openapi_schema = get_openapi(
-        title="API Crawler Máquinas Rodoviárias",
-        version="2.0.0",
-        description="This is project documentation for extracting information from road machines",
+        title="API Crawler Perfumary",
+        version="4.0.0",
+        description="This is project documentation for extracting information from perfumary",
         routes=app.routes,
     )
 

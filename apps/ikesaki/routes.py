@@ -5,10 +5,10 @@ from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from starlette.responses import StreamingResponse
 
-from apps.caminhoes_e_carretas.extract import BackhoeExtract
-from apps.caminhoes_e_carretas.db_manager import DatabaseManager
-from apps.caminhoes_e_carretas.excel_generator import ExcelGenerator
-from apps.caminhoes_e_carretas.automation import CaminhoesECarretasAutomation
+from apps.ikesaki.extract import BackhoeExtract
+from apps.ikesaki.db_manager import DatabaseManager
+from apps.ikesaki.excel_generator import ExcelGenerator
+from apps.ikesaki.automation import CaminhoesECarretasAutomation
 
 logging.basicConfig(level=logging.INFO)
 

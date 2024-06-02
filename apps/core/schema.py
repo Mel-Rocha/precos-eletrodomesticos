@@ -1,20 +1,20 @@
 from tortoise.contrib.pydantic import pydantic_model_creator
 
-from apps.core.models import BackhoeTable
+from apps.core.models import IkesakiTable
 
-BackhoeTableSchemaWithotFormattedDates = None
+ikesakiTableSchemaWithotFormattedDates = None
 
 
-def initialize_backhoe_table_schema():
-    global BackhoeTableSchemaWithotFormattedDates
-    BackhoeTableSchemaWithotFormattedDates = pydantic_model_creator(BackhoeTable, exclude=('created_at',
+def initialize_ikesaki_table_schema():
+    global ikesakiTableSchemaWithotFormattedDates
+    ikesakiTableSchemaWithotFormattedDates = pydantic_model_creator(IkesakiTable, exclude=('created_at',
                                                                                            'updated_at'))
 
 
-initialize_backhoe_table_schema()
+initialize_ikesaki_table_schema()
 
 
-class BackhoeTableSchema(BackhoeTableSchemaWithotFormattedDates):
+class IkesakiTableSchema(ikesakiTableSchemaWithotFormattedDates):
     formatted_created_at: str
     formatted_updated_at: str
 

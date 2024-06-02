@@ -9,7 +9,7 @@ from apps.core import routes as core_router
 from apps.docs import routes as docs_router
 from apps.auth.middlewares import AuthMiddleware
 from apps.docs.custom_openai import custom_openapi
-from apps.caminhoes_e_carretas import routes as caminhoes_e_carretas_router
+from apps.ikesaki import routes as ikesaki_router
 
 load_dotenv()
 
@@ -43,9 +43,9 @@ def create_application() -> FastAPI:
         allow_headers=["*"]
     )
 
-    application.include_router(docs_router.router, tags=['caminhoes_e_carretas', 'core'])
-    application.include_router(caminhoes_e_carretas_router.router, prefix="/caminhoes_e_carretas",
-                               tags=['caminhoes_e_carretas'])
+    application.include_router(docs_router.router, tags=['ikesaki', 'core'])
+    application.include_router(ikesaki_router.router, prefix="/ikesaki",
+                               tags=['ikesaki'])
     application.include_router(core_router.router, prefix="/core",
                                tags=['core'])
 
