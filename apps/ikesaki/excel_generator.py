@@ -24,20 +24,10 @@ class ExcelGenerator:
         df.sort_values(by='crawl_date', ascending=False, inplace=True)
 
         df.rename(columns={
-            'fabricator': 'Fabricante',
-            'model': 'Modelo',
-            'year_fabrication': 'Ano',
             'price': 'Preço',
-            'worked_hours': 'Horas',
             'url': 'URL',
             'crawl_date': 'Data da Busca',
-            'state': 'Estado',
-            'date_of_posting': 'Data da Postagem',
-            'length': 'Comprimento',
-            'volume': 'Volume',
-            'pallets': 'Pallets',
-            'description': 'Descrição',
-            'model_code': 'Cód. Modelo'
+            'product': 'Produto'
         }, inplace=True)
 
         df = df.applymap(ExcelGenerator.remove_illegal_chars)
